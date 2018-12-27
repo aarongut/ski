@@ -1,0 +1,32 @@
+html,
+body {
+	background-color: #fff;
+	color: #335;
+	font-family: sans-serif;
+	margin: 0;
+	padding: 0;
+}
+
+hr {
+	border: 1px solid #eef;
+	width: 100%;
+}
+
+div {
+	box-sizing: border-box;
+}
+
+h1 {
+	color: #69c;
+	font-size: 2em;
+	margin: 1em;
+}
+
+.Grid-row {
+	margin: 0;
+	padding: 0;
+}
+
+.Grid img {
+	cursor: pointer;
+}

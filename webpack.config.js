@@ -1,3 +1,5 @@
+var path = require("path");
+
 module.exports = {
     entry: "./src/index.tsx",
     output: {
@@ -5,8 +7,14 @@ module.exports = {
         path: __dirname + "/dist"
     },
 
+    mode: "development",
+
     // Enable sourcemaps for debugging webpack's output.
     devtool: "source-map",
+
+    devServer: {
+        port: 8080
+    },
 
     resolve: {
         // Add '.ts' and '.tsx' as resolvable extensions.
