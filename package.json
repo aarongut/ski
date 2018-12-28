@@ -4,7 +4,9 @@
   "description": "Ski Photos",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prettier": "prettier --write $(git ls-files \"*.ts*\")",
+    "dev": "webpack-dev-server"
   },
   "repository": {
     "type": "git",
