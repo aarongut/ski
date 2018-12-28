@@ -6,7 +6,6 @@ import * as React from "react";
 export interface Props {
     images: Model.Images;
     onImageSelected: (key: string) => void;
-    selectedImage: string | null;
     width: number;
 }
 
@@ -52,7 +51,6 @@ export class Grid extends React.PureComponent<Props, {}> {
                 return <Picture
                     image={image}
                     onClick={() => this.props.onImageSelected(key)}
-                    selected={this.props.selectedImage === key}
                     src={key}
                     key={key}
                     width={image.width/image.height * scale}

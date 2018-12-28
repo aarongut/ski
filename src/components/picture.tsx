@@ -6,7 +6,6 @@ export interface Props {
     src: string;
     image: Model.Image;
     onClick: () => void;
-    selected?: boolean;
     width: number;
 }
 
@@ -16,11 +15,10 @@ export class Picture extends React.PureComponent<Props, {}> {
     render() {
         const src = `img/600/${this.props.src}`;
         return <img
-            className={ this.props.selected ? "Picture-selected" : ""}
             onClick={this.props.onClick}
             srcSet={this._srcset()}
             src={src}
-            width={ this.props.selected ? "100%" : this.props.width + "px" }
+            width={ this.props.width + "px" }
         />;
     }
 
