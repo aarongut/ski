@@ -37,9 +37,9 @@ export class Root extends React.PureComponent<Props, State> {
 
     render() {
         return <div className="Root">
-                <h1>Ski</h1>
-                <hr />
                 { this._bigPicture() }
+                <h1>Ski</h1>
+                <h2>CMH Galena</h2>
                 <Grid
                     images={ this.state.images }
                     onImageSelected={ this._onImageSelected }
