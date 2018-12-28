@@ -3,7 +3,6 @@ import * as Model from "../model";
 import * as React from "react";
 
 export interface Props {
-    src: string;
     image: Model.Image;
     onClick: () => void;
     width: number;
@@ -13,7 +12,7 @@ export class Picture extends React.PureComponent<Props, {}> {
     static displayName = "Picture";
 
     render() {
-        const src = `img/600/${this.props.src}`;
+        const src = `img/600/${this.props.image.src}`;
         return <img
             onClick={this.props.onClick}
             srcSet={this._srcset()}
@@ -33,7 +32,7 @@ export class Picture extends React.PureComponent<Props, {}> {
             const scale = width / this.props.width;
 
             if (scale >= 1) {
-                srcs.push(`img/${size}/${this.props.src} ${scale}x`);
+                srcs.push(`img/${size}/${this.props.image.src} ${scale}x`);
             }
         });
 
