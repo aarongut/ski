@@ -8,23 +8,31 @@ export interface Props {
   width: number;
 }
 
+interface SrcSetInfo {
+    srcSet: string;
+    bestSrc: string;
+}
+
 export class Picture extends React.PureComponent<Props, {}> {
   static displayName = "Picture";
 
   render() {
-    const src = `img/600/${this.props.image.src}`;
+    const srcSet = this._srcset();
+      
     return (
       <img
         onClick={this.props.onClick}
-        srcSet={this._srcset()}
-        src={src}
+        srcSet={srcSet.srcSet}
+        src={srcSet.bestSrc}
         width={this.props.width + "px"}
       />
     );
   }
 
-  private _srcset = (): string => {
+  private _srcset = (): SrcSetInfo => {
     const srcs: string[] = [];
+    let bestSize = 1600;
+    let bestRatio = Infinity;
 
     Model.SIZES.forEach(size => {
       const width =
@@ -36,13 +44,18 @@ export class Picture extends React.PureComponent<Props, {}> {
 
       if (scale >= 1) {
         srcs.push(`img/${size}/${this.props.image.src} ${scale}x`);
+          if (scale < bestRatio) {
+              bestSize = size;
+            bestRatio = scale;
+          }
       }
     });
 
-    if (srcs.length === 0) {
-      return `img/1600/${this.props.image.src} 1x`;
-    }
+      srcs.push(`img/${bestSize}/${this.props.image.src} 1x`);
 
-    return srcs.join(",");
+    return {
+        srcSet: srcs.join(","),
+        bestSrc: `img/${bestSize}/${this.props.image.src}` 
+    };
   };
 }
