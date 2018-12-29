@@ -19,10 +19,19 @@ export class Root extends React.PureComponent<Props, State> {
 
   private imageSetRefs: React.RefObject<ImageSet>[] = [];
 
+  // innerWidth gets messed up when rotating phones from landscape -> portrait,
+  // and chrome seems to not report innerWidth correctly when scrollbars are present
+  private _viewWidth = () =>
+    Math.min(
+      window.innerWidth,
+      window.outerWidth,
+      document.getElementById("mount")!.clientWidth
+    );
+
   state: State = {
     gridHeights: [],
     pageBottom: window.outerHeight + window.pageYOffset,
-    width: window.outerWidth
+    width: this._viewWidth()
   };
 
   componentDidMount() {
@@ -31,6 +40,7 @@ export class Root extends React.PureComponent<Props, State> {
       .then(data => data.json())
       .then(json => this.setState({ data: json }))
       .then(this._loadHash)
+      .then(this._onViewChange)
       .catch(e => console.error("Error fetching data", e));
 
     window.onresize = this._onViewChange;
@@ -94,7 +104,7 @@ export class Root extends React.PureComponent<Props, State> {
   private _onViewChange = () => {
     this.setState({
       pageBottom: window.outerHeight + window.pageYOffset,
-      width: window.outerWidth
+      width: this._viewWidth()
     });
   };
 
