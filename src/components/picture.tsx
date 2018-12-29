@@ -39,6 +39,10 @@ export class Picture extends React.PureComponent<Props, {}> {
       }
     });
 
+    if (srcs.length === 0) {
+      return `img/1600/${this.props.image.src} 1x`;
+    }
+
     return srcs.join(",");
   };
 }

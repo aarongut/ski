@@ -1,18 +1,22 @@
 var path = require("path");
 
-module.exports = {
+module.exports = (env) => {
+  const mode = env === "dev" ? "development" : "production";
+
+  return {
     entry: "./src/index.tsx",
     output: {
         filename: "bundle.js",
         path: __dirname + "/dist"
     },
 
-    mode: "development",
+    mode: mode,
 
     // Enable sourcemaps for debugging webpack's output.
     devtool: "source-map",
 
     devServer: {
+        publicPath: "/dist/",
         port: 8080
     },
 
@@ -30,4 +34,5 @@ module.exports = {
             { enforce: "pre", test: /\.js$/, loader: "source-map-loader" }
         ]
     },
+  }
 };

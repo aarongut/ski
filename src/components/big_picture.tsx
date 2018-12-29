@@ -11,6 +11,14 @@ export interface Props {
 export class BigPicture extends React.PureComponent<Props, {}> {
   static displayName = "BigPicture";
 
+  componentDidMount() {
+    window.addEventListener("keyup", this._onEscape as any);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("keyup", this._onEscape as any);
+  }
+
   render() {
     const src = `img/1600/${this.props.image.src}`;
     return (
@@ -44,6 +52,12 @@ export class BigPicture extends React.PureComponent<Props, {}> {
 
   private _keyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
+      this.props.onClose();
+    }
+  };
+
+  private _onEscape = (e: React.KeyboardEvent) => {
+    if (e.key === "Escape") {
       this.props.onClose();
     }
   };
