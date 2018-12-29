@@ -6,6 +6,7 @@ import * as React from "react";
 export interface Props {
   images: Model.Image[];
   onImageSelected: (image: Model.Image) => void;
+  pageBottom: number;
   width: number;
 }
 
@@ -20,7 +21,11 @@ interface Row {
 export class Grid extends React.PureComponent<Props, {}> {
   static displayName = "Grid";
 
+  private gridHeight = 0;
+
   render() {
+    this.gridHeight = 0;
+
     let row: Model.Image[] = [];
     const rows: Row[] = [];
     let rowWidth = 0;
@@ -57,9 +62,15 @@ export class Grid extends React.PureComponent<Props, {}> {
             onClick={() => this.props.onImageSelected(image)}
             key={image.src}
             width={(image.width / image.height) * height}
+            defer={
+              this.gridHeight > this.props.pageBottom + 2 * this._rowHeight()
+            }
           />
         );
       });
+
+      this.gridHeight += height;
+
       return (
         <div
           className="Grid-row"
