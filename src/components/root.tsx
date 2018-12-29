@@ -21,8 +21,8 @@ export class Root extends React.PureComponent<Props, State> {
 
   state: State = {
     gridHeights: [],
-    pageBottom: window.innerHeight + window.pageYOffset,
-    width: window.innerWidth
+    pageBottom: window.outerHeight + window.pageYOffset,
+    width: window.outerWidth
   };
 
   componentDidMount() {
@@ -93,8 +93,8 @@ export class Root extends React.PureComponent<Props, State> {
 
   private _onViewChange = () => {
     this.setState({
-      pageBottom: window.innerHeight + window.pageYOffset,
-      width: window.innerWidth
+      pageBottom: window.outerHeight + window.pageYOffset,
+      width: window.outerWidth
     });
   };
 
