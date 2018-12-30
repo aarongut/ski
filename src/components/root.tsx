@@ -36,7 +36,7 @@ export class Root extends React.PureComponent<Props, State> {
 
   componentDidMount() {
     window
-      .fetch(Model.URL)
+      .fetch(Model.dataUrl())
       .then(data => data.json())
       .then(json => this.setState({ data: json }))
       .then(this._loadHash)
