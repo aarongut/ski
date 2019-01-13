@@ -44,7 +44,7 @@ def upload_file(filename, overwrite=True):
     s3.upload_file(filename, BUCKET, filename, ExtraArgs={
         'ACL': 'public-read',
         'ContentType': TYPE_MAP[ext],
-        'CacheControl': 'public, max-age=31536000'
+        'CacheControl': 'public, max-age={}'.format('86400' if ext == 'html' else '31536000')
     })
     print('\tDone.')
 
