@@ -29,6 +29,14 @@ TYPE_MAP = {
 CSS_FILE = 'site.css'
 BUNDLE_FILE = 'dist/bundle.js'
 
+def cache_length(ext):
+    if ext == 'html':
+        return '86400'
+    elif ext == 'json':
+        return '3600'
+    else:
+        return '31536000'
+
 def upload_file(filename, overwrite=True):
     print('Uploading {} to {}/{}'.format(filename, BUCKET, filename))
     ext = filename.split('.')[-1]
@@ -44,7 +52,7 @@ def upload_file(filename, overwrite=True):
     s3.upload_file(filename, BUCKET, filename, ExtraArgs={
         'ACL': 'public-read',
         'ContentType': TYPE_MAP[ext],
-        'CacheControl': 'public, max-age={}'.format('86400' if ext == 'html' else '31536000')
+        'CacheControl': 'public, max-age={}'.format(cache_length(ext))
     })
     print('\tDone.')
 
@@ -146,4 +154,3 @@ if __name__ == '__main__':
         upload_root()
     if args.pub == 'img' or args.pub == 'all':
         upload_images()
-
