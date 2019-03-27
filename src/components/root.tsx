@@ -21,16 +21,22 @@ export class Root extends React.PureComponent<Props, State> {
 
   // innerWidth gets messed up when rotating phones from landscape -> portrait,
   // and chrome seems to not report innerWidth correctly when scrollbars are present
-  private _viewWidth = () =>
-    Math.min(
+  private _viewWidth = (): number => {
+    // iOS Safari does not set outerWidth/outerHeight
+    if (!window.outerWidth) {
+      return window.innerWidth;
+    }
+
+    return Math.min(
       window.innerWidth,
       window.outerWidth,
       document.getElementById("mount")!.clientWidth
     );
+  }
 
   state: State = {
     gridHeights: [],
-    pageBottom: window.outerHeight + window.pageYOffset,
+    pageBottom: window.innerHeight + window.pageYOffset,
     width: this._viewWidth()
   };
 
@@ -103,7 +109,7 @@ export class Root extends React.PureComponent<Props, State> {
 
   private _onViewChange = () => {
     this.setState({
-      pageBottom: window.outerHeight + window.pageYOffset,
+      pageBottom: window.innerHeight + window.pageYOffset,
       width: this._viewWidth()
     });
   };
