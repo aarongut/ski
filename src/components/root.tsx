@@ -32,7 +32,7 @@ export class Root extends React.PureComponent<Props, State> {
       window.outerWidth,
       document.getElementById("mount")!.clientWidth
     );
-  }
+  };
 
   state: State = {
     gridHeights: [],
@@ -42,7 +42,7 @@ export class Root extends React.PureComponent<Props, State> {
 
   componentDidMount() {
     window
-      .fetch(Model.dataUrl())
+      .fetch(Model.dataUrl)
       .then(data => data.json())
       .then(json => this.setState({ data: json }))
       .then(this._loadHash)
