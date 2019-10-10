@@ -17,8 +17,6 @@ export interface State {
 export class Root extends React.PureComponent<Props, State> {
   static displayName = "Root";
 
-  private imageSetRefs: React.RefObject<ImageSet>[] = [];
-
   // innerWidth gets messed up when rotating phones from landscape -> portrait,
   // and chrome seems to not report innerWidth correctly when scrollbars are present
   private _viewWidth = (): number => {

@@ -85,3 +85,17 @@ h2 {
 .BigPicture-footerLink:hover {
 	text-decoration: underline;
 }
+
+@media (prefers-color-scheme: dark) {
+	html,
+	body {
+		background-color: #111;
+		color: #ccf;
+	}
+
+	h2 {
+		border-color: #335;
+		color: #bbb;
+	}
+}
+
