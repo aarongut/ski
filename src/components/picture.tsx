@@ -10,7 +10,7 @@ export interface Props {
 }
 
 export interface State {
-  hasLoadedOnce: boolean;
+    isMounted: boolean;
 }
 
 interface SrcSetInfo {
@@ -23,17 +23,15 @@ export class Picture extends React.PureComponent<Props, State> {
   static displayName = "Picture";
 
   state: State = {
-    hasLoadedOnce: false
+    isMounted: false
   };
 
-  static getDerivedStateFromProps(props: Props, state: State): State | null {
-    return !state.hasLoadedOnce && !props.defer
-      ? { hasLoadedOnce: true }
-      : null;
+  componentDidMount() {
+      this.setState({ isMounted: true });
   }
 
   render() {
-    if (this.props.defer && !this.state.hasLoadedOnce) {
+    if (this.props.defer || !this.state.isMounted) {
       return (
         <div
           className="Picture-defer"

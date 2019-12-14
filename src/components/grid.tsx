@@ -63,7 +63,7 @@ export class Grid extends React.PureComponent<Props, {}> {
             key={image.src}
             width={(image.width / image.height) * height}
             defer={
-              this.gridHeight > this.props.pageBottom + 2 * this._rowHeight()
+              this.gridHeight > this.props.pageBottom
             }
           />
         );

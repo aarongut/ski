@@ -35,10 +35,11 @@ export class BigPicture extends React.PureComponent<Props, {}> {
             href={`img/${this.props.image.src}`}
             target="_blank"
           >
-            Download
+            ⬇ Download
           </a>
           <span
             className="BigPicture-footerLink"
+            role="button"
             onClick={this.props.onClose}
             onKeyPress={this._keyPress}
             tabIndex={0}

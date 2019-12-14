@@ -45,6 +45,14 @@ h2 {
 
 .Grid img {
 	cursor: pointer;
+	transition-duration: .05s;
+	transition-property: transform, box-shadow;
+	transition-timing-function: ease-in-out;
+}
+
+.Grid img:hover {
+	box-shadow: 1px 2px 5px rgba(0, 0, 0, .7);
+	transform: scale(1.5);
 }
 
 .BigPicture {
@@ -57,6 +65,7 @@ h2 {
 	position: fixed;
 	right: 0;
 	top: 0;
+	z-index: 100;
 }
 
 .BigPicture-image {
@@ -79,7 +88,9 @@ h2 {
 .BigPicture-footerLink {
 	color: #69c;
 	cursor: pointer;
+	font-size: 18px;
 	text-decoration: none;
+	text-shadow: 0 0 18px rgba(0, 0, 0, .7);
 }
 
 .BigPicture-footerLink:hover {
