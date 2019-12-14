@@ -47,12 +47,12 @@ h2 {
 	cursor: pointer;
 	transition-duration: .05s;
 	transition-property: transform, box-shadow;
-	transition-timing-function: ease-in-out;
+	transition-timing-function: ease-out;
 }
 
 .Grid img:hover {
 	box-shadow: 1px 2px 5px rgba(0, 0, 0, .7);
-	transform: scale(1.5);
+	transform: scale(1.4);
 }
 
 .BigPicture {
