@@ -10,7 +10,7 @@ export interface Props {
 }
 
 export interface State {
-    isMounted: boolean;
+  isMounted: boolean;
 }
 
 interface SrcSetInfo {
@@ -27,7 +27,7 @@ export class Picture extends React.PureComponent<Props, State> {
   };
 
   componentDidMount() {
-      this.setState({ isMounted: true });
+    this.setState({ isMounted: true });
   }
 
   render() {

@@ -62,9 +62,7 @@ export class Grid extends React.PureComponent<Props, {}> {
             onClick={() => this.props.onImageSelected(image)}
             key={image.src}
             width={(image.width / image.height) * height}
-            defer={
-              this.gridHeight > this.props.pageBottom
-            }
+            defer={this.gridHeight > this.props.pageBottom}
           />
         );
       });
