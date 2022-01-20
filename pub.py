@@ -5,6 +5,7 @@ import hashlib
 import os
 import subprocess
 import sys
+from functools import cache
 
 import boto3
 
@@ -37,18 +38,25 @@ def cache_length(ext):
     else:
         return '31536000'
 
+@cache
+def current_keys():
+    print('Fetching existing keys in {}'.format(BUCKET))
+    existing = s3.list_objects_v2(Bucket=BUCKET)
+    keys = set([content['Key'] for content in existing['Contents']])
+    while existing['IsTruncated']:
+        existing = s3.list_objects_v2(Bucket=BUCKET, ContinuationToken=existing['NextContinuationToken'])
+        keys = keys.union(set([content['Key'] for content in existing['Contents']]))
+
+    return keys
+
 def upload_file(filename, overwrite=True):
-    print('Uploading {} to {}/{}'.format(filename, BUCKET, filename))
     ext = filename.split('.')[-1]
 
-    if not overwrite:
-        try:
-            existing = s3.get_object(Bucket=BUCKET, Key=filename)
-            print('\tSkipping existing key ', filename)
-            return
-        except:
-            pass
+    if not overwrite and filename in current_keys():
+        print('Skipping existing key {}'.format(filename))
+        return
 
+    print('Uploading {} to {}/{}'.format(filename, BUCKET, filename))
     s3.upload_file(filename, BUCKET, filename, ExtraArgs={
         'ACL': 'public-read',
         'ContentType': TYPE_MAP[ext],
