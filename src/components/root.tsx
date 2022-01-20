@@ -24,13 +24,12 @@ export class Root extends React.PureComponent<Props, State> {
     return Math.min(
       window.innerWidth,
       window.outerWidth || Infinity,
-      document.getElementById("mount")!.clientWidth || Infinity
+      document.body.clientWidth
     );
   };
 
   private _viewHeight = (): number => {
     return Math.min(
-      window.innerHeight,
       window.outerHeight || Infinity,
       document.body.clientHeight || Infinity
     );
@@ -54,6 +53,14 @@ export class Root extends React.PureComponent<Props, State> {
 
     window.onresize = this._onViewChange;
     window.onscroll = this._onViewChange;
+
+    try {
+        screen.orientation.onchange = this._onViewChange;
+    } catch (e) {}
+
+    try {
+        window.onorientationchange = this._onViewChange;
+    } catch (e) {}
 
     window.onpopstate = this._loadHash;
   }
@@ -90,7 +97,6 @@ export class Root extends React.PureComponent<Props, State> {
         image={this.state.selectedImage}
         onClose={this._showGrid}
         width={this.state.width}
-        height={this.state.height}
       />
     ) : null;
 

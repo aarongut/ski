@@ -86,5 +86,5 @@ export class Grid extends React.PureComponent<Props, {}> {
   }
 
   private _rowHeight = (): number =>
-    this.props.width > 500 ? ROW_HEIGHT : MOBILE_ROW_HEIGHT;
+    this.props.width > 900 ? ROW_HEIGHT : MOBILE_ROW_HEIGHT;
 }

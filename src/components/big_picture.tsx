@@ -7,7 +7,6 @@ export interface Props {
   image: Model.Image;
   onClose: () => void;
   width: number;
-  height: number;
 }
 
 export class BigPicture extends React.PureComponent<Props, {}> {
@@ -23,7 +22,7 @@ export class BigPicture extends React.PureComponent<Props, {}> {
 
   render() {
     const scaleWidth = this.props.image.width / this.props.width;
-    const scaleHeight = this.props.image.height / (this.props.height - 80);
+    const scaleHeight = this.props.image.height / (window.innerHeight - 80);
     const scale = Math.max(scaleWidth, scaleHeight);
 
     return (
