@@ -12,6 +12,7 @@ export interface State {
   gridHeights: number[];
   pageBottom: number;
   width: number;
+  height: number;
 }
 
 export class Root extends React.PureComponent<Props, State> {
@@ -31,11 +32,24 @@ export class Root extends React.PureComponent<Props, State> {
       document.getElementById("mount")!.clientWidth
     );
   };
+  private _viewHeight = (): number => {
+    // iOS Safari does not set outerWidth/outerHeight
+    if (!window.outerHeight) {
+      return window.innerHeight;
+    }
+
+    return Math.min(
+      window.innerHeight,
+      window.outerHeight,
+      document.body.clientHeight
+    );
+  };
 
   state: State = {
     gridHeights: [],
     pageBottom: window.innerHeight + window.pageYOffset,
-    width: this._viewWidth()
+    width: this._viewWidth(),
+    height: this._viewHeight()
   };
 
   componentDidMount() {
@@ -65,6 +79,7 @@ export class Root extends React.PureComponent<Props, State> {
             setGridHeight={this._setGridHeight(idx)}
             onImageSelected={this._onImageSelected}
             width={this.state.width}
+            height={this.state.height}
           />
         ))
       : null;
@@ -72,7 +87,7 @@ export class Root extends React.PureComponent<Props, State> {
     return (
       <div className="Root">
         {this._bigPicture()}
-        <h1>Ski</h1>
+        <h1>Aaron's Ski Pictures</h1>
         {imageSets}
       </div>
     );
@@ -84,6 +99,7 @@ export class Root extends React.PureComponent<Props, State> {
         image={this.state.selectedImage}
         onClose={this._showGrid}
         width={this.state.width}
+        height={this.state.height}
       />
     ) : null;
 
@@ -108,7 +124,8 @@ export class Root extends React.PureComponent<Props, State> {
   private _onViewChange = () => {
     this.setState({
       pageBottom: window.innerHeight + window.pageYOffset,
-      width: this._viewWidth()
+      width: this._viewWidth(),
+      height: this._viewHeight(),
     });
   };
 

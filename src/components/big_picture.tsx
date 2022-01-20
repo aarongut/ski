@@ -1,4 +1,5 @@
 import * as Model from "../model";
+import { Picture } from "./picture";
 
 import * as React from "react";
 
@@ -6,6 +7,7 @@ export interface Props {
   image: Model.Image;
   onClose: () => void;
   width: number;
+  height: number;
 }
 
 export class BigPicture extends React.PureComponent<Props, {}> {
@@ -20,14 +22,17 @@ export class BigPicture extends React.PureComponent<Props, {}> {
   }
 
   render() {
-    const src = `img/1600/${this.props.image.src}`;
+    const scaleWidth = this.props.image.width / this.props.width;
+    const scaleHeight = this.props.image.height / (this.props.height - 80);
+    const scale = Math.max(scaleWidth, scaleHeight);
+
     return (
       <div className="BigPicture">
-        <div
-          className="BigPicture-image"
-          style={{
-            backgroundImage: `url(${src})`
-          }}
+        <Picture
+          image={this.props.image}
+          onClick={() => {}}
+          height={this.props.image.height / scale}
+          width={this.props.image.width / scale}
         />
         <div className="BigPicture-footer">
           <a

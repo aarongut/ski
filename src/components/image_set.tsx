@@ -9,6 +9,7 @@ export interface Props {
   setGridHeight: (height: number) => void;
   pageBottom: number;
   width: number;
+  height: number;
 }
 
 export class ImageSet extends React.PureComponent<Props, {}> {
@@ -20,13 +21,15 @@ export class ImageSet extends React.PureComponent<Props, {}> {
     return (
       <div className="ImageSet" ref={this.divRef}>
         <h2>
-          {this.props.imageSet.location} · {this.props.imageSet.description}
+            <span className="ImageSet-location">{this.props.imageSet.location}</span>
+            <span className="ImageSet-description">{this.props.imageSet.description}</span>
         </h2>
         <Grid
           images={this.props.imageSet.images}
           onImageSelected={this.props.onImageSelected}
           pageBottom={this.props.pageBottom}
           width={this.props.width}
+          height={this.props.height}
         />
       </div>
     );

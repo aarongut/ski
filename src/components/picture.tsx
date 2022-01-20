@@ -5,6 +5,7 @@ import * as React from "react";
 export interface Props {
   image: Model.Image;
   onClick: () => void;
+  height: number;
   width: number;
   defer?: boolean;
 }
@@ -47,8 +48,10 @@ export class Picture extends React.PureComponent<Props, State> {
         <source srcSet={srcSet.webp} type="image/webp" />
         <source srcSet={srcSet.jpeg} type="image/jpeg" />
         <img
+          id={this.props.image.src}
           onClick={this.props.onClick}
           src={srcSet.bestSrc}
+          height={this.props.height + "px"}
           width={this.props.width + "px"}
         />
       </picture>

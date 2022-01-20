@@ -8,10 +8,11 @@ export interface Props {
   onImageSelected: (image: Model.Image) => void;
   pageBottom: number;
   width: number;
+  height: number;
 }
 
-export const ROW_HEIGHT = 200;
-export const MOBILE_ROW_HEIGHT = 100;
+export const ROW_HEIGHT = 250;
+export const MOBILE_ROW_HEIGHT = 150;
 
 interface Row {
   images: Model.Image[];
@@ -53,7 +54,7 @@ export class Grid extends React.PureComponent<Props, {}> {
     });
 
     const images = rows.map(row => {
-      const height = this.props.width / row.width;
+      const height = Math.min(this.props.height, this.props.width / row.width);
 
       const pics = row.images.map(image => {
         return (
@@ -61,6 +62,7 @@ export class Grid extends React.PureComponent<Props, {}> {
             image={image}
             onClick={() => this.props.onImageSelected(image)}
             key={image.src}
+            height={height}
             width={(image.width / image.height) * height}
             defer={this.gridHeight > this.props.pageBottom}
           />

@@ -35,6 +35,16 @@ h2 {
 	border-bottom: 1px solid #eef;
 }
 
+.ImageSet-location,
+.ImageSet-description {
+	white-space: nowrap;
+}
+
+.ImageSet-location:after {
+	content: " · ";
+	white-space: break-spaces;
+}
+
 .Grid {
 	margin-bottom: 45px;
 }
@@ -46,34 +56,20 @@ h2 {
 
 .Grid img {
 	cursor: pointer;
-	transition-duration: .05s;
-	transition-property: transform, box-shadow;
-	transition-timing-function: ease-out;
-}
-
-.Grid img:hover {
-	box-shadow: 1px 2px 5px rgba(0, 0, 0, .7);
-	transform: scale(1.2);
 }
 
 .BigPicture {
+	align-items: center;
 	background-color: rgba(0, 0, 0, 0.6);
 	bottom: 0;
 	display: flex;
 	flex-direction: column;
+	justify-content: space-evenly;
 	left: 0;
-	padding: 30px;
 	position: fixed;
 	right: 0;
 	top: 0;
 	z-index: 100;
-}
-
-.BigPicture-image {
-	background-position: center;
-	background-repeat: no-repeat;
-	background-size: contain;
-	flex: 1 1 auto;
 }
 
 .BigPicture-footer {
@@ -81,7 +77,6 @@ h2 {
 	display: flex;
 	flex: 0 0 auto;
 	justify-content: space-between;
-	margin-top: 30px;
 	max-width: 200px;
 	width: 100%;
 }

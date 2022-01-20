@@ -7,16 +7,21 @@ module.exports = (env) => {
     entry: "./src/index.tsx",
     output: {
         filename: "bundle.js",
-        path: __dirname + "/dist"
+        path: path.join(__dirname, "dist")
     },
 
     mode: mode,
 
     // Enable sourcemaps for debugging webpack's output.
     devtool: "source-map",
+    performance: {
+      hints: false
+    },
 
     devServer: {
-        publicPath: "/dist/",
+        static: {
+          directory: __dirname,
+        },
         port: 8080
     },
 
