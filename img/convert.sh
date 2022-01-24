@@ -24,6 +24,7 @@ for f in original/*.jpg; do
 done
 
 for img in *.jpg; do
+	make_jpg $img 2400
 	make_jpg $img 1600
 	make_jpg $img 1200
 	make_jpg $img 800
@@ -31,6 +32,7 @@ for img in *.jpg; do
 	make_jpg $img 400
 	make_jpg $img 200
 
+	make_webp $img 2400
 	make_webp $img 1600
 	make_webp $img 1200
 	make_webp $img 800

@@ -145,6 +145,7 @@ def upload_images():
     upload_thumbnail(800)
     upload_thumbnail(1200)
     upload_thumbnail(1600)
+    upload_thumbnail(2400)
     upload_file('img/data.json')
 
 

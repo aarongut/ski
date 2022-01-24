@@ -61,8 +61,8 @@ export class Picture extends React.PureComponent<Props, State> {
   private _srcset = (): SrcSetInfo => {
     const jpegSrcSet: string[] = [];
     const webpSrcSet: string[] = [];
-    let bestSize = 1600;
-    let bestRatio = Infinity;
+    let bestSize = 800;
+    let bestScale = Infinity;
 
     Model.SIZES.forEach(size => {
       const width =
@@ -72,14 +72,14 @@ export class Picture extends React.PureComponent<Props, State> {
 
       const scale = width / this.props.width;
 
-      if (scale >= 1) {
+      if (scale >= 1 || size === 2400) {
         const jpeg = `img/${size}/${this.props.image.src}`;
         const webp = jpeg.replace("jpg", "webp");
         jpegSrcSet.push(`${jpeg} ${scale}x`);
         webpSrcSet.push(`${webp} ${scale}x`);
-        if (scale < bestRatio) {
+        if (scale < bestScale) {
           bestSize = size;
-          bestRatio = scale;
+          bestScale = scale;
         }
       }
     });
