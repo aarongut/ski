@@ -1,5 +1,6 @@
 import { BigPicture } from "./big_picture";
 import { ImageSet } from "./image_set";
+import { SetCover } from "./set_cover";
 import * as Model from "../model";
 
 import * as React from "react";
@@ -9,6 +10,7 @@ export interface Props {}
 export interface State {
   data?: Model.Data | null;
   selectedImage?: Model.Image | null;
+  selectedSet?: Model.ImageSet | null;
   gridHeights: number[];
   pageBottom: number;
   width: number;
@@ -39,53 +41,75 @@ export class Root extends React.PureComponent<Props, State> {
     gridHeights: [],
     pageBottom: this._viewHeight() + window.pageYOffset,
     width: this._viewWidth(),
-    height: this._viewHeight()
+    height: this._viewHeight(),
   };
 
   componentDidMount() {
     window
       .fetch(Model.dataUrl)
-      .then(data => data.json())
-      .then(json => this.setState({ data: json }))
+      .then((data) => data.json())
+      .then((json) => this.setState({ data: json }))
       .then(this._loadHash)
       .then(this._onViewChange)
-      .catch(e => console.error("Error fetching data", e));
+      .catch((e) => console.error("Error fetching data", e));
 
     window.onresize = this._onViewChange;
     window.onscroll = this._onViewChange;
 
     try {
-        screen.orientation.onchange = this._onViewChange;
+      screen.orientation.onchange = this._onViewChange;
     } catch (e) {}
 
     try {
-        window.onorientationchange = this._onViewChange;
+      window.onorientationchange = this._onViewChange;
     } catch (e) {}
 
     window.onpopstate = this._loadHash;
   }
 
-  render() {
-    const imageSets = this.state.data
-      ? this.state.data.sets.map((set, idx) => (
-          <ImageSet
+  private _renderSet(set: Model.ImageSet) {
+    return (
+      <ImageSet
+        key={set.location + set.description}
+        imageSet={set}
+        pageBottom={this.state.pageBottom}
+        setGridHeight={this._setGridHeight(0)}
+        onImageSelected={this._onImageSelected}
+        width={this.state.width}
+        height={this.state.height}
+      />
+    );
+  }
+
+  private _renderSetCovers(sets: Model.ImageSet[]) {
+    return (
+      <div className="Root-setCovers">
+        {sets.map((set) => (
+          <SetCover
             key={set.location + set.description}
             imageSet={set}
-            pageBottom={
-              this.state.pageBottom - this._getPreviousGridHeights(idx)
-            }
-            setGridHeight={this._setGridHeight(idx)}
-            onImageSelected={this._onImageSelected}
-            width={this.state.width}
-            height={this.state.height}
+            onClick={() => {
+              this._onSetSelected(set);
+              scrollTo(0, 0);
+            }}
+            width={Math.min(this.state.width, 400)}
           />
-        ))
+        ))}
+      </div>
+    );
+  }
+
+  render() {
+    const imageSets = this.state.data
+      ? this.state.selectedSet
+        ? this._renderSet(this.state.selectedSet)
+        : this._renderSetCovers(this.state.data.sets)
       : null;
 
     return (
       <div className="Root">
         {this._bigPicture()}
-        <h1>Aaron's Ski Pictures</h1>
+        <h1 onClick={this._onHomeSelected}>Aaron's Ski Pictures</h1>
         {imageSets}
       </div>
     );
@@ -102,19 +126,26 @@ export class Root extends React.PureComponent<Props, State> {
 
   private _loadHash = () => {
     if (window.location.hash.length > 0 && this.state.data) {
-      const src = window.location.hash.slice(1);
-      let selectedImage: Model.Image | null = null;
+      const hash = window.location.hash.slice(1);
 
-      this.state.data.sets.forEach(set => {
-        const image = set.images.find(image => image.src === src);
+      let selectedImage: Model.Image | null = null;
+      let selectedSet: Model.ImageSet | null = null;
+
+      this.state.data.sets.forEach((set) => {
+        if (this._setToHash(set) === hash) {
+          selectedSet = set;
+        }
+
+        const image = set.images.find((image) => image.src === hash);
         if (image) {
           selectedImage = image;
+          selectedSet = set;
         }
       });
 
-      this.setState({ selectedImage: selectedImage });
+      this.setState({ selectedImage, selectedSet });
     } else {
-      this.setState({ selectedImage: null });
+      this.setState({ selectedImage: null, selectedSet: null });
     }
   };
 
@@ -131,16 +162,37 @@ export class Root extends React.PureComponent<Props, State> {
     window.history.pushState(null, "", `#${img.src}`);
   };
 
+  private _onSetSelected = (set: Model.ImageSet) => {
+    this.setState({ selectedSet: set });
+    document.title =
+      set.location + " – " + set.description + " – Skiing - Aaron Gutierrez";
+    window.history.pushState(null, "", `#${this._setToHash(set)}`);
+  };
+
+  private _onHomeSelected = () => {
+    this.setState({
+      selectedSet: null,
+      selectedImage: null,
+    });
+    window.history.pushState(null, "", "#");
+    document.title = "Skiing - Aaron Gutierrez";
+  };
+
+  private _setToHash = (set: Model.ImageSet) =>
+    set.location.replace(/[^a-zA-Z0-9-_]/g, "-") +
+    "-" +
+    set.description.replace(/[^a-zA-Z0-9-_]/g, "-");
+
   private _showGrid = () => {
     this.setState({ selectedImage: null });
-    window.history.pushState(null, "", "#");
+    this._onSetSelected(this.state.selectedSet as Model.ImageSet);
   };
 
   private _setGridHeight = (grid: number) => (height: number) => {
     if (this.state.gridHeights[grid] === height) {
       return;
     }
-    this.setState(state => {
+    this.setState((state) => {
       const newGridHeights = [...state.gridHeights];
       newGridHeights[grid] = height;
 

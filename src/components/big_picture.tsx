@@ -14,10 +14,12 @@ export class BigPicture extends React.PureComponent<Props, {}> {
 
   componentDidMount() {
     window.addEventListener("keyup", this._onEscape as any);
+    document.body.classList.add("no-scroll");
   }
 
   componentWillUnmount() {
     window.removeEventListener("keyup", this._onEscape as any);
+    document.body.classList.remove("no-scroll");
   }
 
   render() {

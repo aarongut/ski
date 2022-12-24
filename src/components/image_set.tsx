@@ -21,8 +21,12 @@ export class ImageSet extends React.PureComponent<Props, {}> {
     return (
       <div className="ImageSet" ref={this.divRef}>
         <h2>
-            <span className="ImageSet-location">{this.props.imageSet.location}</span>
-            <span className="ImageSet-description">{this.props.imageSet.description}</span>
+          <span className="ImageSet-location">
+            {this.props.imageSet.location}
+          </span>
+          <span className="ImageSet-description">
+            {this.props.imageSet.description}
+          </span>
         </h2>
         <Grid
           images={this.props.imageSet.images}

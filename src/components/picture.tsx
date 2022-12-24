@@ -24,7 +24,7 @@ export class Picture extends React.PureComponent<Props, State> {
   static displayName = "Picture";
 
   state: State = {
-    isMounted: false
+    isMounted: false,
   };
 
   componentDidMount() {
@@ -52,7 +52,7 @@ export class Picture extends React.PureComponent<Props, State> {
           onClick={this.props.onClick}
           src={srcSet.bestSrc}
           height={this.props.height + "px"}
-          width={this.props.width + "px"}
+          width={Math.floor(this.props.width) + "px"}
         />
       </picture>
     );
@@ -64,7 +64,7 @@ export class Picture extends React.PureComponent<Props, State> {
     let bestSize = 800;
     let bestScale = Infinity;
 
-    Model.SIZES.forEach(size => {
+    Model.SIZES.forEach((size) => {
       const width =
         this.props.image.width > this.props.image.height
           ? size
@@ -87,7 +87,7 @@ export class Picture extends React.PureComponent<Props, State> {
     return {
       jpeg: jpegSrcSet.join(","),
       webp: webpSrcSet.join(","),
-      bestSrc: `img/${bestSize}/${this.props.image.src}`
+      bestSrc: `img/${bestSize}/${this.props.image.src}`,
     };
   };
 }
