@@ -20,7 +20,7 @@ interface Row {
 }
 
 export class Grid extends React.PureComponent<Props, {}> {
-  static displayName = "Grid";
+    static displayName: string = "Grid";
 
   private gridHeight = 0;
 
