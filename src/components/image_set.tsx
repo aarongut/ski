@@ -37,7 +37,9 @@ export class ImageSet extends React.PureComponent<Props, {}> {
           height={this.props.height}
         />
         <div className="ImageSet-navigation">
-          <a href="#" onClick={this.props.onShowHome}>Back</a>
+          <a href="#" onClick={this.props.onShowHome}>
+            Back
+          </a>
         </div>
       </div>
     );
