@@ -6,19 +6,34 @@ import * as React from "react";
 export interface Props {
   image: Model.Image;
   onClose: () => void;
+  showNext: () => void;
+  showPrevious: () => void;
   width: number;
 }
 
-export class BigPicture extends React.PureComponent<Props, {}> {
+interface TouchStart {
+    x: number;
+    y: number;
+}
+
+export interface State {
+    touchStart?: TouchStart | null;
+}
+
+export class BigPicture extends React.PureComponent<Props, State> {
   static displayName = "BigPicture";
 
   componentDidMount() {
     window.addEventListener("keyup", this._onEscape as any);
+    window.addEventListener("touchstart", this._onTouchStart as any);
+    window.addEventListener("touchend", this._onTouchEnd as any);
     document.body.classList.add("no-scroll");
   }
 
   componentWillUnmount() {
     window.removeEventListener("keyup", this._onEscape as any);
+    window.removeEventListener("touchstart", this._onTouchStart as any);
+    window.removeEventListener("touchend", this._onTouchEnd as any);
     document.body.classList.remove("no-scroll");
   }
 
@@ -68,4 +83,27 @@ export class BigPicture extends React.PureComponent<Props, {}> {
       this.props.onClose();
     }
   };
+
+  private _onTouchStart = (e: React.TouchEvent) => {
+      const touch = e.touches[0];
+      this.setState({ touchStart: { x: touch.screenX, y: touch.screenY }});
+  }
+
+  private _onTouchEnd = (e: React.TouchEvent) => {
+      console.debug("Event", e);
+      const touch = e.changedTouches[0];
+      const touchStart = this.state.touchStart as TouchStart;
+
+      const dx = touch.screenX - touchStart.x;
+
+      if (Math.abs(dx) / window.innerWidth > 0.05) {
+          if (dx < 0) {
+              this.props.showNext();
+          } else {
+              this.props.showPrevious();
+          }
+      }
+
+      this.setState({ touchStart: null });
+  }
 }
