@@ -9,12 +9,15 @@ from functools import cache
 
 import boto3
 
+
 BUCKET='ski.aarongutierrez.com'
 DISTRIBUTION='ELFNI2LSHJUNK'
+
 
 session = boto3.Session(profile_name='push')
 s3 = session.client('s3')
 cloudfront = session.client('cloudfront')
+
 
 TYPE_MAP = {
     'css': 'text/css',
@@ -27,8 +30,10 @@ TYPE_MAP = {
     'webp': 'image/webp',
 }
 
+
 CSS_FILE = 'site.css'
 BUNDLE_FILE = 'dist/bundle.js'
+
 
 def cache_length(ext):
     if ext == 'html':
@@ -37,6 +42,7 @@ def cache_length(ext):
         return '3600'
     else:
         return '31536000'
+
 
 @cache
 def current_keys():
@@ -48,6 +54,7 @@ def current_keys():
         keys = keys.union(set([content['Key'] for content in existing['Contents']]))
 
     return keys
+
 
 def upload_file(filename, overwrite=True):
     ext = filename.split('.')[-1]
@@ -64,6 +71,7 @@ def upload_file(filename, overwrite=True):
     })
     print('\tDone.')
 
+
 def set_default_object(key):
     config = cloudfront.get_distribution_config(Id=DISTRIBUTION)
 
@@ -79,16 +87,17 @@ def set_default_object(key):
     print('\tDone.')
 
 
-
 def filter_filenames(filenames, ext):
     for f in filenames:
         if (isinstance(ext, (list,)) and (f.split('.')[-1] in ext) \
             or f.split('.')[-1] == ext):
             yield f
 
+
 def file_sha(filename):
     output = subprocess.check_output(['shasum', '-a', '256', filename])
     return output.decode().split(' ')[0]
+
 
 def upload_root():
     subprocess.check_call(['webpack'])
@@ -124,18 +133,18 @@ def upload_root():
 
     set_default_object(index_filename)
 
-def upload_bundle():
-    upload_file('dist/bundle.js')
 
 def upload_original():
     files = filter_filenames(os.listdir('img'), ['jpg', 'webp'])
     for f in files:
         upload_file('img/{}'.format(f), overwrite=False)
 
+
 def upload_thumbnail(size):
     files = filter_filenames(os.listdir('img/{}'.format(size)), ['jpg', 'webp'])
     for f in files:
         upload_file('img/{0}/{1}'.format(size, f), overwrite=False)
+
 
 def upload_images():
     upload_original()
