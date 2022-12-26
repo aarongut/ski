@@ -6,6 +6,7 @@ import * as React from "react";
 export interface Props {
   imageSet: Model.ImageSet;
   onImageSelected: (img: Model.Image) => void;
+  onShowHome: () => void;
   setGridHeight: (height: number) => void;
   pageBottom: number;
   width: number;
@@ -35,6 +36,9 @@ export class ImageSet extends React.PureComponent<Props, {}> {
           width={this.props.width}
           height={this.props.height}
         />
+        <div className="ImageSet-navigation">
+          <a href="#" onClick={this.props.onShowHome}>Back</a>
+        </div>
       </div>
     );
   }

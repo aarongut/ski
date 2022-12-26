@@ -75,6 +75,7 @@ export class Root extends React.PureComponent<Props, State> {
         pageBottom={this.state.pageBottom}
         setGridHeight={this._setGridHeight(0)}
         onImageSelected={this._onImageSelected}
+        onShowHome={this._onHomeSelected}
         width={this.state.width}
         height={this.state.height}
       />
