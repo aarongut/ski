@@ -118,6 +118,12 @@ a:hover {
     z-index: 100;
 }
 
+.BigPicture img {
+    transition-duration: 0.2s;
+    transition-timing-function: ease-in-quart;
+    transition-property: height, width;
+}
+
 .BigPicture-footer {
     align-self: center;
     display: flex;
