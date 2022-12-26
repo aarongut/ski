@@ -7,7 +7,7 @@
     "strictNullChecks": true,
     "target": "es6",
     "jsx": "react",
-    "module": "commonjs"
+    "module": "es6"
   },
   "include": [
     "./src/**/*"
