@@ -90,7 +90,6 @@ export class BigPicture extends React.PureComponent<Props, State> {
   }
 
   private _onTouchEnd = (e: React.TouchEvent) => {
-      console.debug("Event", e);
       const touch = e.changedTouches[0];
       const touchStart = this.state.touchStart as TouchStart;
 
