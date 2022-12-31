@@ -12,12 +12,12 @@ export interface Props {
 }
 
 interface TouchStart {
-    x: number;
-    y: number;
+  x: number;
+  y: number;
 }
 
 export interface State {
-    touchStart?: TouchStart | null;
+  touchStart?: TouchStart | null;
 }
 
 export class BigPicture extends React.PureComponent<Props, State> {
@@ -85,24 +85,24 @@ export class BigPicture extends React.PureComponent<Props, State> {
   };
 
   private _onTouchStart = (e: React.TouchEvent) => {
-      const touch = e.touches[0];
-      this.setState({ touchStart: { x: touch.screenX, y: touch.screenY }});
-  }
+    const touch = e.touches[0];
+    this.setState({ touchStart: { x: touch.screenX, y: touch.screenY } });
+  };
 
   private _onTouchEnd = (e: React.TouchEvent) => {
-      const touch = e.changedTouches[0];
-      const touchStart = this.state.touchStart as TouchStart;
+    const touch = e.changedTouches[0];
+    const touchStart = this.state.touchStart as TouchStart;
 
-      const dx = touch.screenX - touchStart.x;
+    const dx = touch.screenX - touchStart.x;
 
-      if (Math.abs(dx) / window.innerWidth > 0.05) {
-          if (dx < 0) {
-              this.props.showNext();
-          } else {
-              this.props.showPrevious();
-          }
+    if (Math.abs(dx) / window.innerWidth > 0.05) {
+      if (dx < 0) {
+        this.props.showNext();
+      } else {
+        this.props.showPrevious();
       }
+    }
 
-      this.setState({ touchStart: null });
-  }
+    this.setState({ touchStart: null });
+  };
 }

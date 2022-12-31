@@ -192,18 +192,20 @@ export class Root extends React.PureComponent<Props, State> {
   };
 
   private _showNextBigPicture = () => {
-    const images: Model.Image[] = this.state.selectedSet?.images as Model.Image[];
+    const images: Model.Image[] = this.state.selectedSet
+      ?.images as Model.Image[];
     const current = images.indexOf(this.state.selectedImage as Model.Image);
     const next = current + 1 >= images.length ? 0 : current + 1;
     this._onImageSelected(images[next]);
-  }
+  };
 
   private _showPreviousBigPicture = () => {
-    const images: Model.Image[] = this.state.selectedSet?.images as Model.Image[];
+    const images: Model.Image[] = this.state.selectedSet
+      ?.images as Model.Image[];
     const current = images.indexOf(this.state.selectedImage as Model.Image);
     const previous = current - 1 < 0 ? images.length - 1 : current - 1;
     this._onImageSelected(images[previous]);
-  }
+  };
 
   private _setGridHeight = (grid: number) => (height: number) => {
     if (this.state.gridHeights[grid] === height) {
