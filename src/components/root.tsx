@@ -161,8 +161,12 @@ export class Root extends React.PureComponent<Props, State> {
   };
 
   private _onImageSelected = (img: Model.Image) => {
+    if (this.state.selectedImage) {
+      window.history.replaceState(null, "", `#${img.src}`);
+    } else {
+      window.history.pushState(null, "", `#${img.src}`);
+    }
     this.setState({ selectedImage: img });
-    window.history.pushState(null, "", `#${img.src}`);
   };
 
   private _onSetSelected = (set: Model.ImageSet) => {
@@ -188,6 +192,7 @@ export class Root extends React.PureComponent<Props, State> {
 
   private _showGrid = () => {
     this.setState({ selectedImage: null });
+    window.history.go(-1);
     this._onSetSelected(this.state.selectedSet as Model.ImageSet);
   };
 
