@@ -28,6 +28,7 @@ TYPE_MAP = {
     'json': 'application/json',
     'png': 'image/png',
     'webp': 'image/webp',
+    'avif': 'image/avif',
 }
 
 
@@ -135,13 +136,13 @@ def upload_root():
 
 
 def upload_original():
-    files = filter_filenames(os.listdir('img'), ['jpg', 'webp'])
+    files = filter_filenames(os.listdir('img'), ['jpg', 'webp', 'avif'])
     for f in files:
         upload_file('img/{}'.format(f), overwrite=False)
 
 
 def upload_thumbnail(size):
-    files = filter_filenames(os.listdir('img/{}'.format(size)), ['jpg', 'webp'])
+    files = filter_filenames(os.listdir('img/{}'.format(size)), ['jpg', 'webp', 'avif'])
     for f in files:
         upload_file('img/{0}/{1}'.format(size, f), overwrite=False)
 
