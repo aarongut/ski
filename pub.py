@@ -4,7 +4,6 @@ import argparse
 import hashlib
 import os
 import subprocess
-import sys
 from functools import cache
 
 import boto3
@@ -20,6 +19,7 @@ cloudfront = session.client('cloudfront')
 
 
 TYPE_MAP = {
+    'avif': 'image/avif',
     'css': 'text/css',
     'gif': 'image/gif',
     'html': 'text/html; charset=utf8',
@@ -28,7 +28,6 @@ TYPE_MAP = {
     'json': 'application/json',
     'png': 'image/png',
     'webp': 'image/webp',
-    'avif': 'image/avif',
 }
 
 
