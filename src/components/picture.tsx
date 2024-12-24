@@ -17,6 +17,7 @@ export interface State {
 interface SrcSetInfo {
   jpeg: string;
   webp: string;
+  avif: string;
   bestSrc: string;
 }
 
@@ -45,6 +46,7 @@ export class Picture extends React.PureComponent<Props, State> {
 
     return (
       <picture>
+        <source srcSet={srcSet.avif} type="image/avif" />
         <source srcSet={srcSet.webp} type="image/webp" />
         <source srcSet={srcSet.jpeg} type="image/jpeg" />
         <img
@@ -61,6 +63,7 @@ export class Picture extends React.PureComponent<Props, State> {
   private _srcset = (): SrcSetInfo => {
     const jpegSrcSet: string[] = [];
     const webpSrcSet: string[] = [];
+    const avifSrcSet: string[] = [];
     let bestSize = 800;
     let bestScale = Infinity;
 
@@ -75,8 +78,10 @@ export class Picture extends React.PureComponent<Props, State> {
       if (scale >= 1 || size === 2400) {
         const jpeg = `img/${size}/${this.props.image.src}`;
         const webp = jpeg.replace("jpg", "webp");
+        const avif = jpeg.replace("jpg", "avif");
         jpegSrcSet.push(`${jpeg} ${scale}x`);
         webpSrcSet.push(`${webp} ${scale}x`);
+        avifSrcSet.push(`${avif} ${scale}x`);
         if (scale < bestScale) {
           bestSize = size;
           bestScale = scale;
@@ -87,6 +92,7 @@ export class Picture extends React.PureComponent<Props, State> {
     return {
       jpeg: jpegSrcSet.join(","),
       webp: webpSrcSet.join(","),
+      avif: avifSrcSet.join(","),
       bestSrc: `img/${bestSize}/${this.props.image.src}`,
     };
   };
