@@ -7,16 +7,15 @@ module.exports = (env) => {
     entry: "./src/index.tsx",
     output: {
         filename: "bundle.js",
-        path: path.join(__dirname, "dist")
+        path: path.join(__dirname, "dist"),
+        clean: true,
     },
 
     mode: mode,
+    target: "web",
 
     // Enable sourcemaps for debugging webpack's output.
     devtool: "source-map",
-    performance: {
-      hints: false
-    },
 
     devServer: {
         static: {
@@ -37,5 +36,9 @@ module.exports = (env) => {
             { enforce: "pre", test: /\.js$/, loader: "source-map-loader" }
         ]
     },
+
+    experiments: {
+      topLevelAwait: true
+    }
   }
 };

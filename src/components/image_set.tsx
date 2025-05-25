@@ -16,7 +16,7 @@ export interface Props {
 export class ImageSet extends React.PureComponent<Props, {}> {
   static displayName = "ImageSet";
 
-  private divRef: React.RefObject<HTMLDivElement> = React.createRef();
+  private divRef = React.createRef<HTMLDivElement>();
 
   render() {
     return (

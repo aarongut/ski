@@ -1,8 +1,7 @@
 import { Root } from "./components/root";
 
-import * as React from "react";
-import * as ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 
-const body = document.getElementById("mount");
-
-ReactDOM.render(<Root />, body);
+const body = document.getElementById("mount") as HTMLElement;
+const root = createRoot(body);
+root.render(<Root />);

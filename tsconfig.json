@@ -5,9 +5,14 @@
     "sourceMap": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
-    "target": "es6",
-    "jsx": "react",
-    "module": "es6"
+    "strict": true,
+    "target": "ES2020",
+    "jsx": "react-jsx",
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true
   },
   "include": [
     "./src/**/*"
