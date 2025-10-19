@@ -223,7 +223,4 @@ export class Root extends React.PureComponent<Props, State> {
       return { gridHeights: newGridHeights };
     });
   };
-
-  private _getPreviousGridHeights = (grid: number): number =>
-    this.state.gridHeights.slice(0, grid).reduce((a, b) => a + b, 0);
 }
