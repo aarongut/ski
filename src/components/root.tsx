@@ -1,235 +1,255 @@
-import { BigPicture } from "./big_picture";
-import { ImageSet } from "./image_set";
-import { SetCover } from "./set_cover";
-import * as Model from "../model";
-
 import * as React from "react";
+import * as Model from "model";
+import { BigPicture } from "components/big_picture";
+import { ImageSet } from "components/image_set";
+import { SetCover } from "components/set_cover";
 
 export interface Props {}
 
-export interface State {
-  data?: Model.Data | null;
-  selectedImage?: Model.Image | null;
-  selectedSet?: Model.ImageSet | null;
-  gridHeights: number[];
-  pageBottom: number;
-  width: number;
-  height: number;
-}
+const viewWidth = (): number => {
+  const widths = [
+    window.innerWidth,
+    window.outerWidth,
+    document.documentElement?.clientWidth,
+    document.body?.clientWidth,
+  ].filter((w): w is number => typeof w === "number" && w > 0 && isFinite(w));
 
-export class Root extends React.PureComponent<Props, State> {
-  static displayName = "Root";
+  return widths.length > 0 ? Math.max(...widths) : 0;
+};
 
-  // innerWidth gets messed up when rotating phones from landscape -> portrait,
-  // and chrome seems to not report innerWidth correctly when scrollbars are present
-  private _viewWidth = (): number => {
-    const widths = [
-      window.innerWidth,
-      window.outerWidth,
-      document.documentElement?.clientWidth,
-      document.body?.clientWidth,
-    ].filter((w): w is number => typeof w === "number" && w > 0 && isFinite(w));
+const viewHeight = (): number => {
+  const heights = [
+    window.innerHeight,
+    window.outerHeight,
+    document.documentElement?.clientHeight,
+    document.body?.clientHeight,
+  ].filter((h): h is number => typeof h === "number" && h > 0 && isFinite(h));
 
-    // Use the largest reasonable value to avoid shrinking the grid when a single
-    // measurement source temporarily reports something tiny.
-    return widths.length > 0 ? Math.max(...widths) : 0;
-  };
+  return heights.length > 0 ? Math.max(...heights) : 0;
+};
 
-  private _viewHeight = (): number => {
-    const heights = [
-      window.innerHeight,
-      window.outerHeight,
-      document.documentElement?.clientHeight,
-      document.body?.clientHeight,
-    ].filter((h): h is number => typeof h === "number" && h > 0 && isFinite(h));
+const formatHash = (set: Model.ImageSet) =>
+  set.location.replace(/[^a-zA-Z0-9-_]/g, "-") +
+  "-" +
+  set.description.replace(/[^a-zA-Z0-9-_]/g, "-");
 
-    return heights.length > 0 ? Math.max(...heights) : 0;
-  };
+export const Root: React.FC<Props> = () => {
+  const [data, setData] = React.useState<Model.Data | null>(null);
+  const [selectedImage, setSelectedImage] = React.useState<Model.Image | null>(
+    null
+  );
+  const [selectedSet, setSelectedSet] = React.useState<Model.ImageSet | null>(
+    null
+  );
+  const [dimensions, setDimensions] = React.useState(() => {
+    const height = viewHeight();
+    return {
+      pageBottom: height + window.pageYOffset,
+      width: viewWidth(),
+      height,
+    };
+  });
 
-  state: State = {
-    gridHeights: [],
-    pageBottom: this._viewHeight() + window.pageYOffset,
-    width: this._viewWidth(),
-    height: this._viewHeight(),
-  };
+  const updateView = React.useCallback(() => {
+    const height = viewHeight();
+    setDimensions({
+      pageBottom: height + window.pageYOffset,
+      width: viewWidth(),
+      height,
+    });
+  }, []);
 
-  componentDidMount() {
+  const loadHash = React.useCallback(() => {
+    if (window.location.hash.length === 0) {
+      setSelectedImage(null);
+      setSelectedSet(null);
+      return;
+    }
+
+    if (!data) {
+      return;
+    }
+
+    const hash = window.location.hash.slice(1);
+    let nextImage: Model.Image | null = null;
+    let nextSet: Model.ImageSet | null = null;
+
+    data.sets.forEach((set) => {
+      if (formatHash(set) === hash) {
+        nextSet = set;
+      }
+
+      const image = set.images.find((img) => img.src === hash);
+      if (image) {
+        nextImage = image;
+        nextSet = set;
+      }
+    });
+
+    setSelectedImage(nextImage);
+    setSelectedSet(nextSet);
+  }, [data]);
+
+  React.useEffect(() => {
+    let isMounted = true;
     window
       .fetch(Model.dataUrl)
-      .then((data) => data.json())
-      .then((json) => this.setState({ data: json }))
-      .then(this._loadHash)
-      .then(this._onViewChange)
+      .then((response) => response.json())
+      .then((json) => {
+        if (isMounted) {
+          setData(json);
+        }
+      })
       .catch((e) => console.error("Error fetching data", e));
 
-    window.onresize = this._onViewChange;
-    window.onscroll = this._onViewChange;
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
-    try {
-      screen.orientation.onchange = this._onViewChange;
-    } catch (e) {}
+  React.useEffect(() => {
+    if (data) {
+      loadHash();
+    }
+  }, [data, loadHash]);
 
-    try {
-      window.onorientationchange = this._onViewChange;
-    } catch (e) {}
+  React.useEffect(() => {
+    const handlePopState = () => loadHash();
 
-    window.onpopstate = this._loadHash;
-  }
+    window.addEventListener("resize", updateView);
+    window.addEventListener("scroll", updateView, { passive: true });
+    window.addEventListener("orientationchange", updateView);
+    window.addEventListener("popstate", handlePopState);
 
-  private _renderSet(set: Model.ImageSet) {
-    return (
-      <ImageSet
-        key={set.location + set.description}
-        imageSet={set}
-        pageBottom={this.state.pageBottom}
-        setGridHeight={this._setGridHeight(0)}
-        onImageSelected={this._onImageSelected}
-        onShowHome={this._onHomeSelected}
-        width={this.state.width}
-        height={this.state.height}
-      />
-    );
-  }
+    const orientation = (screen as any).orientation;
+    if (orientation?.addEventListener) {
+      orientation.addEventListener("change", updateView);
+    }
 
-  private _renderSetCovers(sets: Model.ImageSet[]) {
+    updateView();
+
+    return () => {
+      window.removeEventListener("resize", updateView);
+      window.removeEventListener("scroll", updateView);
+      window.removeEventListener("orientationchange", updateView);
+      window.removeEventListener("popstate", handlePopState);
+      if (orientation?.removeEventListener) {
+        orientation.removeEventListener("change", updateView);
+      }
+    };
+  }, [loadHash, updateView]);
+
+  React.useEffect(() => {
+    if (selectedSet) {
+      document.title =
+        selectedSet.location +
+        " – " +
+        selectedSet.description +
+        " – Skiing - Aaron Gutierrez";
+    } else {
+      document.title = "Skiing - Aaron Gutierrez";
+    }
+  }, [selectedSet]);
+
+  const onImageSelected = React.useCallback(
+    (img: Model.Image) => {
+      if (selectedImage) {
+        window.history.replaceState(null, "", `#${img.src}`);
+      } else {
+        window.history.pushState(null, "", `#${img.src}`);
+      }
+      setSelectedImage(img);
+    },
+    [selectedImage]
+  );
+
+  const onSetSelected = React.useCallback((set: Model.ImageSet) => {
+    setSelectedSet(set);
+    window.history.pushState(null, "", `#${formatHash(set)}`);
+  }, []);
+
+  const onHomeSelected = React.useCallback(() => {
+    setSelectedSet(null);
+    setSelectedImage(null);
+    window.history.pushState(null, "", "#");
+  }, []);
+
+  const showGrid = React.useCallback(() => {
+    setSelectedImage(null);
+    window.history.go(-1);
+    if (selectedSet) {
+      onSetSelected(selectedSet);
+    }
+  }, [onSetSelected, selectedSet]);
+
+  const showNextBigPicture = React.useCallback(() => {
+    if (!selectedSet || !selectedImage) {
+      return;
+    }
+    const images: Model.Image[] = selectedSet.images;
+    const current = images.indexOf(selectedImage);
+    const next = current + 1 >= images.length ? 0 : current + 1;
+    onImageSelected(images[next]);
+  }, [onImageSelected, selectedImage, selectedSet]);
+
+  const showPreviousBigPicture = React.useCallback(() => {
+    if (!selectedSet || !selectedImage) {
+      return;
+    }
+    const images: Model.Image[] = selectedSet.images;
+    const current = images.indexOf(selectedImage);
+    const previous = current - 1 < 0 ? images.length - 1 : current - 1;
+    onImageSelected(images[previous]);
+  }, [onImageSelected, selectedImage, selectedSet]);
+
+  const renderSets = () => {
+    if (!data) {
+      return null;
+    }
+    if (selectedSet) {
+      return (
+        <ImageSet
+          key={selectedSet.location + selectedSet.description}
+          imageSet={selectedSet}
+          pageBottom={dimensions.pageBottom}
+          onImageSelected={onImageSelected}
+          onShowHome={onHomeSelected}
+          width={dimensions.width}
+          height={dimensions.height}
+        />
+      );
+    }
+
     return (
       <div className="Root-setCovers">
-        {sets.map((set) => (
+        {data.sets.map((set) => (
           <SetCover
             key={set.location + set.description}
             imageSet={set}
             onClick={() => {
-              this._onSetSelected(set);
+              onSetSelected(set);
               scrollTo(0, 0);
             }}
-            width={Math.min(this.state.width, 400)}
+            width={Math.min(dimensions.width, 400)}
           />
         ))}
       </div>
     );
-  }
-
-  render() {
-    const imageSets = this.state.data
-      ? this.state.selectedSet
-        ? this._renderSet(this.state.selectedSet)
-        : this._renderSetCovers(this.state.data.sets)
-      : null;
-
-    return (
-      <div className="Root">
-        {this._bigPicture()}
-        <h1 onClick={this._onHomeSelected}>Aaron's Ski Pictures</h1>
-        {imageSets}
-      </div>
-    );
-  }
-
-  private _bigPicture = () =>
-    this.state.selectedImage ? (
-      <BigPicture
-        image={this.state.selectedImage}
-        onClose={this._showGrid}
-        showNext={this._showNextBigPicture}
-        showPrevious={this._showPreviousBigPicture}
-        width={this.state.width}
-      />
-    ) : null;
-
-  private _loadHash = () => {
-    if (window.location.hash.length > 0 && this.state.data) {
-      const hash = window.location.hash.slice(1);
-
-      let selectedImage: Model.Image | null = null;
-      let selectedSet: Model.ImageSet | null = null;
-
-      this.state.data.sets.forEach((set) => {
-        if (this._setToHash(set) === hash) {
-          selectedSet = set;
-        }
-
-        const image = set.images.find((image) => image.src === hash);
-        if (image) {
-          selectedImage = image;
-          selectedSet = set;
-        }
-      });
-
-      this.setState({ selectedImage, selectedSet });
-    } else {
-      this.setState({ selectedImage: null, selectedSet: null });
-    }
   };
 
-  private _onViewChange = () => {
-    this.setState({
-      pageBottom: this._viewHeight() + window.pageYOffset,
-      width: this._viewWidth(),
-      height: this._viewHeight(),
-    });
-  };
-
-  private _onImageSelected = (img: Model.Image) => {
-    if (this.state.selectedImage) {
-      window.history.replaceState(null, "", `#${img.src}`);
-    } else {
-      window.history.pushState(null, "", `#${img.src}`);
-    }
-    this.setState({ selectedImage: img });
-  };
-
-  private _onSetSelected = (set: Model.ImageSet) => {
-    this.setState({ selectedSet: set });
-    document.title =
-      set.location + " – " + set.description + " – Skiing - Aaron Gutierrez";
-    window.history.pushState(null, "", `#${this._setToHash(set)}`);
-  };
-
-  private _onHomeSelected = () => {
-    this.setState({
-      selectedSet: null,
-      selectedImage: null,
-    });
-    window.history.pushState(null, "", "#");
-    document.title = "Skiing - Aaron Gutierrez";
-  };
-
-  private _setToHash = (set: Model.ImageSet) =>
-    set.location.replace(/[^a-zA-Z0-9-_]/g, "-") +
-    "-" +
-    set.description.replace(/[^a-zA-Z0-9-_]/g, "-");
-
-  private _showGrid = () => {
-    this.setState({ selectedImage: null });
-    window.history.go(-1);
-    this._onSetSelected(this.state.selectedSet as Model.ImageSet);
-  };
-
-  private _showNextBigPicture = () => {
-    const images: Model.Image[] = this.state.selectedSet
-      ?.images as Model.Image[];
-    const current = images.indexOf(this.state.selectedImage as Model.Image);
-    const next = current + 1 >= images.length ? 0 : current + 1;
-    this._onImageSelected(images[next]);
-  };
-
-  private _showPreviousBigPicture = () => {
-    const images: Model.Image[] = this.state.selectedSet
-      ?.images as Model.Image[];
-    const current = images.indexOf(this.state.selectedImage as Model.Image);
-    const previous = current - 1 < 0 ? images.length - 1 : current - 1;
-    this._onImageSelected(images[previous]);
-  };
-
-  private _setGridHeight = (grid: number) => (height: number) => {
-    if (this.state.gridHeights[grid] === height) {
-      return;
-    }
-    this.setState((state) => {
-      const newGridHeights = [...state.gridHeights];
-      newGridHeights[grid] = height;
-
-      return { gridHeights: newGridHeights };
-    });
-  };
-}
+  return (
+    <div className="Root">
+      {selectedImage ? (
+        <BigPicture
+          image={selectedImage}
+          onClose={showGrid}
+          showNext={showNextBigPicture}
+          showPrevious={showPreviousBigPicture}
+          width={dimensions.width}
+        />
+      ) : null}
+      <h1 onClick={onHomeSelected}>Aaron's Ski Pictures</h1>
+      {renderSets()}
+    </div>
+  );
+};

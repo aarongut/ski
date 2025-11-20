@@ -1,61 +1,48 @@
-import { Grid } from "./grid";
-import * as Model from "../model";
-
 import * as React from "react";
+import * as Model from "model";
+import { Grid } from "components/grid";
 
 export interface Props {
   imageSet: Model.ImageSet;
   onImageSelected: (img: Model.Image) => void;
   onShowHome: () => void;
-  setGridHeight: (height: number) => void;
   pageBottom: number;
   width: number;
   height: number;
 }
 
-export class ImageSet extends React.PureComponent<Props, {}> {
-  static displayName = "ImageSet";
-
-  private divRef = React.createRef<HTMLDivElement>();
-
-  render() {
-    return (
-      <div className="ImageSet" ref={this.divRef}>
-        <h2>
-          <span className="ImageSet-location">
-            {this.props.imageSet.location}
-          </span>
-          <span className="ImageSet-description">
-            {this.props.imageSet.description}
-          </span>
-        </h2>
-        <Grid
-          images={this.props.imageSet.images}
-          onImageSelected={this.props.onImageSelected}
-          pageBottom={this.props.pageBottom}
-          width={this.props.width}
-          height={this.props.height}
-        />
-        <div className="ImageSet-navigation">
-          <a href="#" onClick={this.props.onShowHome}>
-            Back
-          </a>
-        </div>
+export const ImageSet: React.FC<Props> = ({
+  imageSet,
+  onImageSelected,
+  onShowHome,
+  pageBottom,
+  width,
+  height,
+}) => {
+  return (
+    <div className="ImageSet">
+      <h2>
+        <span className="ImageSet-location">{imageSet.location}</span>
+        <span className="ImageSet-description">{imageSet.description}</span>
+      </h2>
+      <Grid
+        images={imageSet.images}
+        onImageSelected={onImageSelected}
+        pageBottom={pageBottom}
+        width={width}
+        height={height}
+      />
+      <div className="ImageSet-navigation">
+        <a
+          href="#"
+          onClick={(e) => {
+            e.preventDefault();
+            onShowHome();
+          }}
+        >
+          Back
+        </a>
       </div>
-    );
-  }
-
-  componentDidMount() {
-    this._setGridHeight();
-  }
-
-  componentDidUpdate() {
-    this._setGridHeight();
-  }
-
-  private _setGridHeight = () => {
-    if (this.divRef.current) {
-      this.props.setGridHeight(this.divRef.current.clientHeight);
-    }
-  };
-}
+    </div>
+  );
+};

@@ -1,7 +1,6 @@
-import { Picture } from "./picture";
-import * as Model from "../model";
-
 import * as React from "react";
+import * as Model from "model";
+import { Picture } from "components/picture";
 
 export interface Props {
   imageSet: Model.ImageSet;
@@ -9,40 +8,30 @@ export interface Props {
   width: number;
 }
 
-export interface State {}
+export const SetCover: React.FC<Props> = ({ imageSet, onClick, width }) => {
+  const coverImage = imageSet.images[0];
+  const isTall = coverImage.height > coverImage.width;
 
-export class SetCover extends React.PureComponent<Props, State> {
-  static displayName = "SetCover";
+  const height = isTall
+    ? width
+    : (coverImage.height / coverImage.width) * width;
 
-  render() {
-    const image = this.props.imageSet.images[0];
-    const isTall = image.height > image.width;
+  const normalizedWidth = isTall
+    ? (coverImage.width / coverImage.height) * width
+    : width;
 
-    const height = isTall
-      ? this.props.width
-      : (image.height / image.width) * this.props.width;
-
-    const width = isTall
-      ? (image.width / image.height) * this.props.width
-      : this.props.width;
-
-    return (
-      <div className="SetCover" onClick={this.props.onClick}>
-        <Picture
-          image={image}
-          onClick={() => {}}
-          height={height}
-          width={width}
-        />
-        <h2>
-          <span className="SetCover-location">
-            {this.props.imageSet.location}
-          </span>
-          <span className="SetCover-description">
-            {this.props.imageSet.description}
-          </span>
-        </h2>
-      </div>
-    );
-  }
-}
+  return (
+    <div className="SetCover" onClick={onClick}>
+      <Picture
+        image={coverImage}
+        onClick={() => {}}
+        height={height}
+        width={normalizedWidth}
+      />
+      <h2>
+        <span className="SetCover-location">{imageSet.location}</span>
+        <span className="SetCover-description">{imageSet.description}</span>
+      </h2>
+    </div>
+  );
+};

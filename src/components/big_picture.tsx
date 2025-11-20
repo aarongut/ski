@@ -1,7 +1,6 @@
-import * as Model from "../model";
-import { Picture } from "./picture";
-
 import * as React from "react";
+import * as Model from "model";
+import { Picture } from "components/picture";
 
 export interface Props {
   image: Model.Image;
@@ -16,93 +15,99 @@ interface TouchStart {
   y: number;
 }
 
-export interface State {
-  touchStart?: TouchStart | null;
-}
+export const BigPicture: React.FC<Props> = ({
+  image,
+  onClose,
+  showNext,
+  showPrevious,
+  width,
+}) => {
+  const [touchStart, setTouchStart] = React.useState<TouchStart | null>(null);
 
-export class BigPicture extends React.PureComponent<Props, State> {
-  static displayName = "BigPicture";
-
-  componentDidMount() {
-    window.addEventListener("keyup", this._onEscape as any);
-    window.addEventListener("touchstart", this._onTouchStart as any);
-    window.addEventListener("touchend", this._onTouchEnd as any);
-    document.body.classList.add("no-scroll");
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener("keyup", this._onEscape as any);
-    window.removeEventListener("touchstart", this._onTouchStart as any);
-    window.removeEventListener("touchend", this._onTouchEnd as any);
-    document.body.classList.remove("no-scroll");
-  }
-
-  render() {
-    const scaleWidth = this.props.image.width / this.props.width;
-    const scaleHeight = this.props.image.height / (window.innerHeight - 80);
-    const scale = Math.max(scaleWidth, scaleHeight);
-
-    return (
-      <div className="BigPicture">
-        <Picture
-          image={this.props.image}
-          onClick={() => {}}
-          height={this.props.image.height / scale}
-          width={this.props.image.width / scale}
-        />
-        <div className="BigPicture-footer">
-          <a
-            className="BigPicture-footerLink"
-            href={`img/${this.props.image.src}`}
-            target="_blank"
-          >
-            ⬇ Download
-          </a>
-          <span
-            className="BigPicture-footerLink"
-            role="button"
-            onClick={this.props.onClose}
-            onKeyPress={this._keyPress}
-            tabIndex={0}
-          >
-            Close
-          </span>
-        </div>
-      </div>
-    );
-  }
-
-  private _keyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      this.props.onClose();
-    }
-  };
-
-  private _onEscape = (e: React.KeyboardEvent) => {
-    if (e.key === "Escape") {
-      this.props.onClose();
-    }
-  };
-
-  private _onTouchStart = (e: React.TouchEvent) => {
-    const touch = e.touches[0];
-    this.setState({ touchStart: { x: touch.screenX, y: touch.screenY } });
-  };
-
-  private _onTouchEnd = (e: React.TouchEvent) => {
-    const touch = e.changedTouches[0];
-    const touchStart = this.state.touchStart as TouchStart;
-
-    const dx = touch.screenX - touchStart.x;
-
-    if (Math.abs(dx) / window.innerWidth > 0.05) {
-      if (dx < 0) {
-        this.props.showNext();
-      } else {
-        this.props.showPrevious();
+  const onEscape = React.useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
       }
-    }
+    },
+    [onClose]
+  );
 
-    this.setState({ touchStart: null });
-  };
-}
+  const onTouchStart = React.useCallback((e: TouchEvent) => {
+    const touch = e.touches[0];
+    setTouchStart({ x: touch.screenX, y: touch.screenY });
+  }, []);
+
+  const onTouchEnd = React.useCallback(
+    (e: TouchEvent) => {
+      if (!touchStart) {
+        return;
+      }
+      const touch = e.changedTouches[0];
+      const dx = touch.screenX - touchStart.x;
+
+      if (Math.abs(dx) / window.innerWidth > 0.05) {
+        if (dx < 0) {
+          showNext();
+        } else {
+          showPrevious();
+        }
+      }
+
+      setTouchStart(null);
+    },
+    [showNext, showPrevious, touchStart]
+  );
+
+  React.useEffect(() => {
+    window.addEventListener("keyup", onEscape);
+    window.addEventListener("touchstart", onTouchStart);
+    window.addEventListener("touchend", onTouchEnd);
+    document.body.classList.add("no-scroll");
+
+    return () => {
+      window.removeEventListener("keyup", onEscape);
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchend", onTouchEnd);
+      document.body.classList.remove("no-scroll");
+    };
+  }, [onEscape, onTouchEnd, onTouchStart]);
+
+  const scaleWidth = image.width / width;
+  const scaleHeight = image.height / (window.innerHeight - 80);
+  const scale = Math.max(scaleWidth, scaleHeight);
+
+  return (
+    <div className="BigPicture">
+      <Picture
+        image={image}
+        onClick={() => {}}
+        height={image.height / scale}
+        width={image.width / scale}
+      />
+      <div className="BigPicture-footer">
+        <a
+          className="BigPicture-footerLink"
+          href={`img/${image.src}`}
+          target="_blank"
+          rel="noreferrer"
+        >
+          ⬇ Download
+        </a>
+        <span
+          className="BigPicture-footerLink"
+          role="button"
+          onClick={onClose}
+          onKeyPress={(e) => {
+            if (e.key === "Enter") {
+              onClose();
+            }
+          }}
+          tabIndex={0}
+        >
+          Close
+        </span>
+      </div>
+    </div>
+  );
+};

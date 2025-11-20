@@ -1,4 +1,4 @@
-import { Root } from "./components/root";
+import { Root } from "components/root";
 
 import { createRoot } from "react-dom/client";
 

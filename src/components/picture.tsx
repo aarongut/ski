@@ -1,6 +1,5 @@
-import * as Model from "../model";
-
 import * as React from "react";
+import * as Model from "model";
 
 export interface Props {
   image: Model.Image;
@@ -10,10 +9,6 @@ export interface Props {
   defer?: boolean;
 }
 
-export interface State {
-  isMounted: boolean;
-}
-
 interface SrcSetInfo {
   jpeg: string;
   webp: string;
@@ -21,46 +16,20 @@ interface SrcSetInfo {
   bestSrc: string;
 }
 
-export class Picture extends React.PureComponent<Props, State> {
-  static displayName = "Picture";
+export const Picture: React.FC<Props> = ({
+  image,
+  onClick,
+  height,
+  width,
+  defer,
+}) => {
+  const [isMounted, setIsMounted] = React.useState(false);
 
-  state: State = {
-    isMounted: false,
-  };
+  React.useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
-  componentDidMount() {
-    this.setState({ isMounted: true });
-  }
-
-  render() {
-    if (this.props.defer || !this.state.isMounted) {
-      return (
-        <div
-          className="Picture-defer"
-          style={{ width: this.props.width + "px" }}
-        />
-      );
-    }
-
-    const srcSet = this._srcset();
-
-    return (
-      <picture>
-        <source srcSet={srcSet.avif} type="image/avif" />
-        <source srcSet={srcSet.webp} type="image/webp" />
-        <source srcSet={srcSet.jpeg} type="image/jpeg" />
-        <img
-          id={this.props.image.src}
-          onClick={this.props.onClick}
-          src={srcSet.bestSrc}
-          height={this.props.height + "px"}
-          width={Math.floor(this.props.width) + "px"}
-        />
-      </picture>
-    );
-  }
-
-  private _srcset = (): SrcSetInfo => {
+  const srcSet = React.useMemo(() => {
     const jpegSrcSet: string[] = [];
     const webpSrcSet: string[] = [];
     const avifSrcSet: string[] = [];
@@ -68,15 +37,13 @@ export class Picture extends React.PureComponent<Props, State> {
     let bestScale = Infinity;
 
     Model.SIZES.forEach((size) => {
-      const width =
-        this.props.image.width > this.props.image.height
-          ? size
-          : (this.props.image.width / this.props.image.height) * size;
+      const derivedWidth =
+        image.width > image.height ? size : (image.width / image.height) * size;
 
-      const scale = width / this.props.width;
+      const scale = derivedWidth / width;
 
       if (scale >= 1 || size === 2400) {
-        const jpeg = `img/${size}/${this.props.image.src}`;
+        const jpeg = `img/${size}/${image.src}`;
         const webp = jpeg.replace("jpg", "webp");
         const avif = jpeg.replace("jpg", "avif");
         jpegSrcSet.push(`${jpeg} ${scale}x`);
@@ -93,7 +60,27 @@ export class Picture extends React.PureComponent<Props, State> {
       jpeg: jpegSrcSet.join(","),
       webp: webpSrcSet.join(","),
       avif: avifSrcSet.join(","),
-      bestSrc: `img/${bestSize}/${this.props.image.src}`,
+      bestSrc: `img/${bestSize}/${image.src}`,
     };
-  };
-}
+  }, [image, width]);
+
+  if (defer || !isMounted) {
+    return <div className="Picture-defer" style={{ width: width + "px" }} />;
+  }
+
+  return (
+    <picture>
+      <source srcSet={srcSet.avif} type="image/avif" />
+      <source srcSet={srcSet.webp} type="image/webp" />
+      <source srcSet={srcSet.jpeg} type="image/jpeg" />
+      <img
+        id={image.src}
+        onClick={onClick}
+        src={srcSet.bestSrc}
+        height={height + "px"}
+        width={Math.floor(width) + "px"}
+        alt=""
+      />
+    </picture>
+  );
+};
