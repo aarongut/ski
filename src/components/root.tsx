@@ -202,6 +202,20 @@ export const Root: React.FC<Props> = () => {
     onImageSelected(images[previous]);
   }, [onImageSelected, selectedImage, selectedSet]);
 
+  const neighbors = React.useMemo(() => {
+    if (!selectedSet || !selectedImage) {
+      return null;
+    }
+    const images = selectedSet.images;
+    const current = images.indexOf(selectedImage);
+    const previousIdx = current - 1 < 0 ? images.length - 1 : current - 1;
+    const nextIdx = current + 1 >= images.length ? 0 : current + 1;
+    return {
+      previous: images[previousIdx],
+      next: images[nextIdx],
+    };
+  }, [selectedImage, selectedSet]);
+
   const renderSets = () => {
     if (!data) {
       return null;
@@ -242,6 +256,8 @@ export const Root: React.FC<Props> = () => {
       {selectedImage ? (
         <BigPicture
           image={selectedImage}
+          previousImage={neighbors?.previous ?? selectedImage}
+          nextImage={neighbors?.next ?? selectedImage}
           onClose={showGrid}
           showNext={showNextBigPicture}
           showPrevious={showPreviousBigPicture}
