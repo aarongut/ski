@@ -4,3 +4,5 @@ dist/
 img/
 node_modules
 .DS_Store
+venv/
+.idea/
