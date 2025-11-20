@@ -23,18 +23,27 @@ export class Root extends React.PureComponent<Props, State> {
   // innerWidth gets messed up when rotating phones from landscape -> portrait,
   // and chrome seems to not report innerWidth correctly when scrollbars are present
   private _viewWidth = (): number => {
-    return Math.min(
+    const widths = [
       window.innerWidth,
-      window.outerWidth || Infinity,
-      document.body.clientWidth
-    );
+      window.outerWidth,
+      document.documentElement?.clientWidth,
+      document.body?.clientWidth,
+    ].filter((w): w is number => typeof w === "number" && w > 0 && isFinite(w));
+
+    // Use the largest reasonable value to avoid shrinking the grid when a single
+    // measurement source temporarily reports something tiny.
+    return widths.length > 0 ? Math.max(...widths) : 0;
   };
 
   private _viewHeight = (): number => {
-    return Math.min(
-      window.outerHeight || Infinity,
-      document.body.clientHeight || Infinity
-    );
+    const heights = [
+      window.innerHeight,
+      window.outerHeight,
+      document.documentElement?.clientHeight,
+      document.body?.clientHeight,
+    ].filter((h): h is number => typeof h === "number" && h > 0 && isFinite(h));
+
+    return heights.length > 0 ? Math.max(...heights) : 0;
   };
 
   state: State = {

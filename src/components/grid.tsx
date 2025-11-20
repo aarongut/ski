@@ -43,6 +43,13 @@ export class Grid extends React.PureComponent<Props, {}> {
   // [width][idx] -> badness
   private rowsMemo: Map<number, Map<number, BadList>> = new Map();
 
+  componentDidUpdate(prevProps: Props) {
+    // The memoized rows depend on the image list; clear when the set changes
+    if (prevProps.images !== this.props.images) {
+      this.rowsMemo.clear();
+    }
+  }
+
   rows(idx: number): BadList {
     const targetHeight = this._rowHeight();
 
