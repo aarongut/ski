@@ -1,7 +1,8 @@
 *.swp
 *.swo
 dist/
-img/
+img/*
+!img/convert.sh
 node_modules
 .DS_Store
 venv/
