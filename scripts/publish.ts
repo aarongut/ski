@@ -19,10 +19,11 @@ const DISTRIBUTION = "ELFNI2LSHJUNK";
 const DIST_DIR = "dist";
 const IMAGE_DIR = "img";
 const AWS_PROFILE = "push";
+const AWS_REGION = "us-west-2";
 
 const credentials = fromIni({ profile: AWS_PROFILE });
 
-const s3 = new S3Client({ credentials });
+const s3 = new S3Client({ credentials, region: AWS_REGION });
 const cloudfront = new CloudFrontClient({ credentials });
 
 let existingKeysPromise: Promise<Set<string>> | null = null;
@@ -128,6 +129,10 @@ const walkFiles = async (root: string): Promise<string[]> => {
     const fullPath = path.join(root, entry.name);
 
     if (entry.isDirectory()) {
+      if (root === IMAGE_DIR && entry.name === "original") {
+        continue;
+      }
+
       files.push(...(await walkFiles(fullPath)));
       continue;
     }
