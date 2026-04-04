@@ -13,11 +13,11 @@
     "check": "vp check",
     "dev": "vp dev",
     "build": "vp build",
+    "deploy": "node --experimental-strip-types scripts/publish.ts",
     "fmt": "vp fmt",
     "images": "node --experimental-strip-types scripts/convert.ts",
     "lint": "vp lint",
     "preview": "vp preview",
-    "publish": "node --experimental-strip-types scripts/publish.ts",
     "prepare": "vp config"
   },
   "dependencies": {
