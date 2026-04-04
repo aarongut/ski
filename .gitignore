@@ -2,8 +2,6 @@
 *.swo
 dist/
 img/*
-!img/convert.sh
+!img/data.json
 node_modules
 .DS_Store
-venv/
-.idea/

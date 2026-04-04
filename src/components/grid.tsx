@@ -1,6 +1,6 @@
 import * as React from "react";
-import * as Model from "model";
-import { Picture } from "components/picture";
+import * as Model from "@/model";
+import { Picture } from "@/components/picture";
 
 export interface Props {
   images: Model.Image[];
@@ -30,13 +30,7 @@ const badness = (row: Model.Image[], width: number, height: number): number => {
   return (rowHeight - height) * (rowHeight - height);
 };
 
-export const Grid: React.FC<Props> = ({
-  images,
-  onImageSelected,
-  pageBottom,
-  width,
-  height,
-}) => {
+export const Grid: React.FC<Props> = ({ images, onImageSelected, pageBottom, width, height }) => {
   const rowsMemo = React.useRef<Map<number, Map<number, BadList>>>(new Map());
   const targetRowHeight = width > 900 ? ROW_HEIGHT : MOBILE_ROW_HEIGHT;
 

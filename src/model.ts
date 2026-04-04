@@ -1,6 +1,6 @@
-export const SIZES = [2400, 1600, 1200, 800, 600, 400, 200];
+import galleryData from "../img/data.json";
 
-export const dataUrl = "img/data.json";
+export const SIZES = [2400, 1600, 1200, 800, 600, 400, 200];
 
 export interface Data {
   sets: ImageSet[];
@@ -17,3 +17,5 @@ export interface Image {
   height: number;
   width: number;
 }
+
+export const data = galleryData as Data;

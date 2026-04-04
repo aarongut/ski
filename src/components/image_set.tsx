@@ -1,6 +1,6 @@
 import * as React from "react";
-import * as Model from "model";
-import { Grid } from "components/grid";
+import * as Model from "@/model";
+import { Grid } from "@/components/grid";
 
 export interface Props {
   imageSet: Model.ImageSet;

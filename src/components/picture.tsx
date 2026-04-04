@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as Model from "model";
+import * as Model from "@/model";
 
 export interface Props {
   image: Model.Image;
@@ -9,20 +9,7 @@ export interface Props {
   defer?: boolean;
 }
 
-interface SrcSetInfo {
-  jpeg: string;
-  webp: string;
-  avif: string;
-  bestSrc: string;
-}
-
-export const Picture: React.FC<Props> = ({
-  image,
-  onClick,
-  height,
-  width,
-  defer,
-}) => {
+export const Picture: React.FC<Props> = ({ image, onClick, height, width, defer }) => {
   const [isMounted, setIsMounted] = React.useState(false);
 
   React.useEffect(() => {
@@ -37,8 +24,7 @@ export const Picture: React.FC<Props> = ({
     let bestScale = Infinity;
 
     Model.SIZES.forEach((size) => {
-      const derivedWidth =
-        image.width > image.height ? size : (image.width / image.height) * size;
+      const derivedWidth = image.width > image.height ? size : (image.width / image.height) * size;
 
       const scale = derivedWidth / width;
 

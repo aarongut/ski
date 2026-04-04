@@ -1,6 +1,6 @@
 import * as React from "react";
-import * as Model from "model";
-import { Picture } from "components/picture";
+import * as Model from "@/model";
+import { Picture } from "@/components/picture";
 
 export interface Props {
   image: Model.Image;
@@ -48,9 +48,7 @@ export const BigPicture: React.FC<Props> = ({
   const [pinchState, setPinchState] = React.useState<PinchState | null>(null);
   const [isPointerPanning, setIsPointerPanning] = React.useState(false);
   const tapStartRef = React.useRef<Point | null>(null);
-  const lastTapRef = React.useRef<{ time: number; x: number; y: number } | null>(
-    null
-  );
+  const lastTapRef = React.useRef<{ time: number; x: number; y: number } | null>(null);
 
   const onEscape = React.useCallback(
     (e: KeyboardEvent) => {
@@ -58,7 +56,7 @@ export const BigPicture: React.FC<Props> = ({
         onClose();
       }
     },
-    [onClose]
+    [onClose],
   );
 
   const goNext = React.useCallback(() => {
@@ -103,7 +101,7 @@ export const BigPicture: React.FC<Props> = ({
         y: Math.min(maxPanY, Math.max(-maxPanY, nextPan.y)),
       };
     },
-    [image.height, image.width, width, zoom]
+    [image.height, image.width, width, zoom],
   );
 
   const applyZoomAt = React.useCallback(
@@ -124,7 +122,7 @@ export const BigPicture: React.FC<Props> = ({
       setZoom(clampedZoom);
       setPan(clampPan(nextPan, clampedZoom));
     },
-    [clampPan, getViewportCenter, pan.x, pan.y, zoom]
+    [clampPan, getViewportCenter, pan.x, pan.y, zoom],
   );
 
   const startSwipe = React.useCallback((touch: React.Touch) => {
@@ -162,7 +160,7 @@ export const BigPicture: React.FC<Props> = ({
       startSwipe(touch);
       tapStartRef.current = { x: touch.clientX, y: touch.clientY };
     },
-    [startSwipe, zoom]
+    [startSwipe, zoom],
   );
 
   const onTouchEnd = React.useCallback(
@@ -171,8 +169,7 @@ export const BigPicture: React.FC<Props> = ({
       const tapStart = tapStartRef.current;
       const now = Date.now();
       const isTap =
-        tapStart &&
-        Math.hypot(tapStart.x - touch.clientX, tapStart.y - touch.clientY) < 10;
+        tapStart && Math.hypot(tapStart.x - touch.clientX, tapStart.y - touch.clientY) < 10;
       const lastTap = lastTapRef.current;
 
       if (isTap && lastTap && now - lastTap.time < 350) {
@@ -182,10 +179,7 @@ export const BigPicture: React.FC<Props> = ({
           const focal = rect
             ? { x: touch.clientX - rect.left, y: touch.clientY - rect.top }
             : undefined;
-          const fitScale = Math.max(
-            image.width / width,
-            image.height / (window.innerHeight - 80)
-          );
+          const fitScale = Math.max(image.width / width, image.height / (window.innerHeight - 80));
           const targetZoom = zoom > 1.05 ? 1 : Math.min(4, fitScale);
           applyZoomAt(targetZoom, focal);
           setIsDragging(false);
@@ -242,7 +236,17 @@ export const BigPicture: React.FC<Props> = ({
         setDragOffset(0);
       }
     },
-    [applyZoomAt, goNext, goPrevious, image.height, image.width, pinchState, touchStart, width, zoom]
+    [
+      applyZoomAt,
+      goNext,
+      goPrevious,
+      image.height,
+      image.width,
+      pinchState,
+      touchStart,
+      width,
+      zoom,
+    ],
   );
 
   const onTouchMove = React.useCallback(
@@ -272,8 +276,8 @@ export const BigPicture: React.FC<Props> = ({
               x: prev.x + (touch.clientX - panStart.x),
               y: prev.y + (touch.clientY - panStart.y),
             },
-            zoom
-          )
+            zoom,
+          ),
         );
         setPanStart({ x: touch.clientX, y: touch.clientY });
         return;
@@ -292,7 +296,7 @@ export const BigPicture: React.FC<Props> = ({
       }
       setDragOffset(dx);
     },
-    [applyZoomAt, clampPan, panStart, pinchState, touchStart, zoom]
+    [applyZoomAt, clampPan, panStart, pinchState, touchStart, zoom],
   );
 
   React.useEffect(() => {
@@ -327,7 +331,7 @@ export const BigPicture: React.FC<Props> = ({
       }
       applyZoomAt(nextZoom, focal);
     },
-    [applyZoomAt, zoom]
+    [applyZoomAt, zoom],
   );
 
   React.useEffect(() => {
@@ -352,8 +356,8 @@ export const BigPicture: React.FC<Props> = ({
             x: prev.x + e.movementX,
             y: prev.y + e.movementY,
           },
-          zoom
-        )
+          zoom,
+        ),
       );
     };
 
@@ -377,7 +381,7 @@ export const BigPicture: React.FC<Props> = ({
       e.preventDefault();
       setIsPointerPanning(true);
     },
-    [zoom]
+    [zoom],
   );
 
   const slideWidth = width;
@@ -404,27 +408,18 @@ export const BigPicture: React.FC<Props> = ({
         onTouchEnd={onTouchEnd}
         onMouseDown={onMouseDown}
       >
-        <div
-          className={`BigPicture-track${isDragging ? " is-dragging" : ""}`}
-          style={trackStyle}
-        >
+        <div className={`BigPicture-track${isDragging ? " is-dragging" : ""}`} style={trackStyle}>
           {[previousImage, image, nextImage].map((img) => {
             const imgScaleWidth = img.width / width;
             const imgScaleHeight = img.height / (window.innerHeight - 80);
             const imgScale = Math.max(imgScaleWidth, imgScaleHeight);
             const isCurrent = img.src === image.src;
             return (
-              <div
-                className="BigPicture-frame"
-                key={img.src}
-                style={slideStyle}
-              >
+              <div className="BigPicture-frame" key={img.src} style={slideStyle}>
                 <div
                   className="BigPicture-imageWrapper"
                   style={
-                    isCurrent
-                      ? { transform: `translate3d(${pan.x}px, ${pan.y}px, 0)` }
-                      : undefined
+                    isCurrent ? { transform: `translate3d(${pan.x}px, ${pan.y}px, 0)` } : undefined
                   }
                 >
                   <div

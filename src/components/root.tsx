@@ -1,8 +1,8 @@
 import * as React from "react";
-import * as Model from "model";
-import { BigPicture } from "components/big_picture";
-import { ImageSet } from "components/image_set";
-import { SetCover } from "components/set_cover";
+import * as Model from "@/model";
+import { BigPicture } from "@/components/big_picture";
+import { ImageSet } from "@/components/image_set";
+import { SetCover } from "@/components/set_cover";
 
 export interface Props {}
 
@@ -34,13 +34,9 @@ const formatHash = (set: Model.ImageSet) =>
   set.description.replace(/[^a-zA-Z0-9-_]/g, "-");
 
 export const Root: React.FC<Props> = () => {
-  const [data, setData] = React.useState<Model.Data | null>(null);
-  const [selectedImage, setSelectedImage] = React.useState<Model.Image | null>(
-    null
-  );
-  const [selectedSet, setSelectedSet] = React.useState<Model.ImageSet | null>(
-    null
-  );
+  const [data] = React.useState<Model.Data>(Model.data);
+  const [selectedImage, setSelectedImage] = React.useState<Model.Image | null>(null);
+  const [selectedSet, setSelectedSet] = React.useState<Model.ImageSet | null>(null);
   const [dimensions, setDimensions] = React.useState(() => {
     const height = viewHeight();
     return {
@@ -91,26 +87,7 @@ export const Root: React.FC<Props> = () => {
   }, [data]);
 
   React.useEffect(() => {
-    let isMounted = true;
-    window
-      .fetch(Model.dataUrl)
-      .then((response) => response.json())
-      .then((json) => {
-        if (isMounted) {
-          setData(json);
-        }
-      })
-      .catch((e) => console.error("Error fetching data", e));
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  React.useEffect(() => {
-    if (data) {
-      loadHash();
-    }
+    loadHash();
   }, [data, loadHash]);
 
   React.useEffect(() => {
@@ -142,10 +119,7 @@ export const Root: React.FC<Props> = () => {
   React.useEffect(() => {
     if (selectedSet) {
       document.title =
-        selectedSet.location +
-        " – " +
-        selectedSet.description +
-        " – Skiing - Aaron Gutierrez";
+        selectedSet.location + " – " + selectedSet.description + " – Skiing - Aaron Gutierrez";
     } else {
       document.title = "Skiing - Aaron Gutierrez";
     }
@@ -160,7 +134,7 @@ export const Root: React.FC<Props> = () => {
       }
       setSelectedImage(img);
     },
-    [selectedImage]
+    [selectedImage],
   );
 
   const onSetSelected = React.useCallback((set: Model.ImageSet) => {
@@ -217,9 +191,6 @@ export const Root: React.FC<Props> = () => {
   }, [selectedImage, selectedSet]);
 
   const renderSets = () => {
-    if (!data) {
-      return null;
-    }
     if (selectedSet) {
       return (
         <ImageSet
