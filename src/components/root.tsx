@@ -7,25 +7,23 @@ import { SetCover } from "@/components/set_cover";
 export interface Props {}
 
 const viewWidth = (): number => {
-  const widths = [
-    window.innerWidth,
-    window.outerWidth,
-    document.documentElement?.clientWidth,
-    document.body?.clientWidth,
-  ].filter((w): w is number => typeof w === "number" && w > 0 && isFinite(w));
+  const documentWidth = document.documentElement?.clientWidth ?? document.body?.clientWidth ?? 0;
 
-  return widths.length > 0 ? Math.max(...widths) : 0;
+  if (documentWidth > 0) {
+    return documentWidth;
+  }
+
+  return window.innerWidth > 0 ? window.innerWidth : 0;
 };
 
 const viewHeight = (): number => {
-  const heights = [
-    window.innerHeight,
-    window.outerHeight,
-    document.documentElement?.clientHeight,
-    document.body?.clientHeight,
-  ].filter((h): h is number => typeof h === "number" && h > 0 && isFinite(h));
+  const documentHeight = document.documentElement?.clientHeight ?? document.body?.clientHeight ?? 0;
 
-  return heights.length > 0 ? Math.max(...heights) : 0;
+  if (documentHeight > 0) {
+    return documentHeight;
+  }
+
+  return window.innerHeight > 0 ? window.innerHeight : 0;
 };
 
 const formatHash = (set: Model.ImageSet) =>
@@ -92,6 +90,9 @@ export const Root: React.FC<Props> = () => {
 
   React.useEffect(() => {
     const handlePopState = () => loadHash();
+    const animationFrame = window.requestAnimationFrame(() => {
+      updateView();
+    });
 
     window.addEventListener("resize", updateView);
     window.addEventListener("scroll", updateView, { passive: true });
@@ -103,9 +104,22 @@ export const Root: React.FC<Props> = () => {
       orientation.addEventListener("change", updateView);
     }
 
+    const resizeObserver =
+      typeof ResizeObserver === "undefined"
+        ? null
+        : new ResizeObserver(() => {
+            updateView();
+          });
+
+    resizeObserver?.observe(document.documentElement);
+    if (document.body) {
+      resizeObserver?.observe(document.body);
+    }
+
     updateView();
 
     return () => {
+      window.cancelAnimationFrame(animationFrame);
       window.removeEventListener("resize", updateView);
       window.removeEventListener("scroll", updateView);
       window.removeEventListener("orientationchange", updateView);
@@ -113,6 +127,7 @@ export const Root: React.FC<Props> = () => {
       if (orientation?.removeEventListener) {
         orientation.removeEventListener("change", updateView);
       }
+      resizeObserver?.disconnect();
     };
   }, [loadHash, updateView]);
 
