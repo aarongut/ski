@@ -21,27 +21,27 @@
     "prepare": "vp config"
   },
   "dependencies": {
-    "@aws-sdk/client-cloudfront": "^3.888.0",
-    "@aws-sdk/client-s3": "^3.888.0",
-    "@aws-sdk/credential-providers": "^3.888.0",
-    "mime-types": "^3.0.1",
-    "react": "^19.1.1",
-    "react-dom": "^19.1.1"
+    "@aws-sdk/client-cloudfront": "^3.1029.0",
+    "@aws-sdk/client-s3": "^3.1029.0",
+    "@aws-sdk/credential-providers": "^3.1029.0",
+    "mime-types": "^3.0.2",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5"
   },
   "devDependencies": {
     "@types/mime-types": "^3.0.1",
-    "@types/node": "^24.5.2",
-    "@types/react": "^19.1.12",
-    "@types/react-dom": "^19.1.9",
+    "@types/node": "^25.6.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.0.2",
     "babel-plugin-react-compiler": "^1.0.0",
-    "typescript": "^5.9.2",
-    "vite": "npm:@voidzero-dev/vite-plus-core@latest",
-    "vite-plus": "latest"
+    "typescript": "^6.0.2",
+    "vite": "npm:@voidzero-dev/vite-plus-core@0.1.16",
+    "vite-plus": "0.1.16"
   },
   "overrides": {
-    "vite": "npm:@voidzero-dev/vite-plus-core@latest",
-    "vitest": "npm:@voidzero-dev/vite-plus-test@latest"
+    "vite": "npm:@voidzero-dev/vite-plus-core@0.1.16",
+    "vitest": "npm:@voidzero-dev/vite-plus-test@0.1.16"
   },
   "packageManager": "npm@11.12.1"
 }
