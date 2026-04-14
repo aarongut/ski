@@ -17,6 +17,17 @@ export default defineConfig({
         plugins: ["babel-plugin-react-compiler"],
       },
     }),
+    {
+      // Rolldown-vite's JSON HMR logs an update but doesn't reload the browser.
+      // Force a full reload when data.json changes.
+      name: "reload-data-json",
+      handleHotUpdate({ file, server }) {
+        if (file.endsWith("/data.json")) {
+          server.ws.send({ type: "full-reload" });
+          return [];
+        }
+      },
+    },
   ],
   resolve: {
     alias: {

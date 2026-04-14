@@ -1,4 +1,4 @@
-import galleryData from "../img/data.json";
+import galleryData from "../data.json";
 
 export const SIZES = [2400, 1600, 1200, 800, 600, 400, 200];
 

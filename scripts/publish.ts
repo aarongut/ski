@@ -24,7 +24,7 @@ const AWS_REGION = "us-west-2";
 const credentials = fromIni({ profile: AWS_PROFILE });
 
 const s3 = new S3Client({ credentials, region: AWS_REGION });
-const cloudfront = new CloudFrontClient({ credentials });
+const cloudfront = new CloudFrontClient({ credentials, region: AWS_REGION });
 
 let existingKeysPromise: Promise<Set<string>> | null = null;
 
@@ -150,10 +150,6 @@ const uploadTree = async (root: string, keyPrefix: string, overwrite: boolean): 
 
   for (const file of files) {
     const relative = path.relative(root, file).split(path.sep).join("/");
-    if (root === IMAGE_DIR && relative === "data.json") {
-      continue;
-    }
-
     const key = keyPrefix ? `${keyPrefix}/${relative}` : relative;
     await uploadFile(file, key, overwrite);
   }

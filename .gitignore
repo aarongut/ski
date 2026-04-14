@@ -1,7 +1,6 @@
 *.swp
 *.swo
 dist/
-img/*
-!img/data.json
+img/
 node_modules
 .DS_Store

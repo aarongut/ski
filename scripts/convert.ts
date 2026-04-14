@@ -6,7 +6,7 @@ import { pathToFileURL } from "node:url";
 
 const IMAGE_ROOT = "img";
 const ORIGINAL_DIR = path.join(IMAGE_ROOT, "original");
-const DATA_FILE = path.join(IMAGE_ROOT, "data.json");
+const DATA_FILE = "data.json";
 const JPG_QUALITY = 30;
 const JSON_WIDTH = 100;
 const PLACEHOLDER_LOCATION = "TODO location";
@@ -227,7 +227,7 @@ const prependPlaceholderSet = async (images: ManifestImage[]): Promise<void> => 
   const newImages = findNewImages(existing, images);
 
   if (newImages.length === 0) {
-    console.log("No new images to add to img/data.json");
+    console.log("No new images to add to data.json");
     return;
   }
 
