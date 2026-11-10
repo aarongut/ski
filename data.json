@@ -392,7 +392,7 @@
       "description": "21-28 December 2019",
       "images": [
         { "src": "4ac7d903797ca243887b4a9ed66e4d6a.jpg", "width": 5472, "height": 3648, "exif": { "camera": "Canon EOS 70D", "lens": "EF-S55-250mm f/4-5.6 IS II", "focalLength": 55, "aperture": 10, "shutter": "1/1000", "iso": 100, "taken": "2019-12-25T10:50:00" } },
-        { "src": "b54a415163b3d1c9190fcb35c04e7f79.jpg", "width": 5449, "height": 3633, "exif": { "camera": "Canon EOS 70D", "lens": "18-35mm", "focalLength": 35, "aperture": 8, "shutter": "1/13", "iso": 100, "taken": "2019-12-25T08:29:01" } },
+        { "src": "b54a415163b3d1c9190fcb35c04e7f79.jpg", "width": 5449, "height": 3633, "exif": { "camera": "Canon EOS 70D", "lens": "ART 18-35mm F1.8 DC HSM", "focalLength": 35, "aperture": 8, "shutter": "1/13", "iso": 100, "taken": "2019-12-25T08:29:01" } },
         { "src": "69ad0ae8c74581a748612918c59a26c9.jpg", "width": 5472, "height": 3648, "exif": { "camera": "Canon EOS 70D", "lens": "EF-S55-250mm f/4-5.6 IS II", "focalLength": 131, "aperture": 8, "shutter": "1/1000", "iso": 100, "taken": "2019-12-25T10:41:17" } },
         { "src": "842995782f40b237ef4d49a0aafc6bff.jpg", "width": 4334, "height": 2889, "exif": { "camera": "Canon EOS 70D", "lens": "EF-S55-250mm f/4-5.6 IS II", "focalLength": 179, "aperture": 9, "shutter": "1/1000", "iso": 100, "taken": "2019-12-25T10:48:32" } },
         { "src": "1323a2e7852658b7b44a89c25b902c58.jpg", "width": 4863, "height": 3242, "exif": { "camera": "Canon EOS 70D", "lens": "EF-S55-250mm f/4-5.6 IS II", "focalLength": 70, "aperture": 9, "shutter": "1/1000", "iso": 100, "taken": "2019-12-25T10:48:40" } },

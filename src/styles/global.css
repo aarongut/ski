@@ -322,6 +322,20 @@ img {
   margin: 0;
 }
 
+/* Translucent backing so the readout stays legible over bright snow, especially when zoomed. */
+.pswp__exif-panel {
+  background: rgba(0, 0, 0, 0.68);
+  border-radius: 4px;
+  display: grid;
+  gap: 2px;
+  max-width: 100%;
+  padding: 6px 10px;
+}
+
+.pswp__exif-panel[hidden] {
+  display: none;
+}
+
 /* Camera readout: a technical, monospaced slab serif with spaced-out fields. */
 .pswp__exif {
   color: rgba(255, 255, 255, 0.6);

@@ -85,7 +85,10 @@ const setUpLightbox = (grid: HTMLElement): void => {
         gear.className = "pswp__exif";
         const exposure = document.createElement("p");
         exposure.className = "pswp__exif";
-        el.append(gear, exposure);
+        const panel = document.createElement("div");
+        panel.className = "pswp__exif-panel";
+        panel.append(gear, exposure);
+        el.append(panel);
 
         const fill = (line: HTMLElement, parts: string[] | undefined) => {
           line.replaceChildren(
@@ -109,6 +112,7 @@ const setUpLightbox = (grid: HTMLElement): void => {
           }
           fill(gear, display?.gear);
           fill(exposure, display?.exposure);
+          panel.hidden = gear.hidden && exposure.hidden;
         };
         pswp.on("change", update);
         update();
