@@ -1,0 +1,55 @@
+---
+import "../styles/global.css";
+import { SITE_DESCRIPTION, SITE_TITLE, SITE_URL } from "../lib/gallery.ts";
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: { url: string; width: number; height: number };
+}
+
+const { title, description = SITE_DESCRIPTION, image } = Astro.props;
+const pageTitle = title ? `${title} – ${SITE_TITLE}` : SITE_TITLE;
+const canonical = new URL(Astro.url.pathname, SITE_URL).href;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta name="theme-color" content="#f5f6f7" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0e1013" media="(prefers-color-scheme: dark)" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE_TITLE} />
+    <meta property="og:title" content={title ?? SITE_TITLE} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    {
+      image && (
+        <>
+          <meta property="og:image" content={image.url} />
+          <meta property="og:image:type" content="image/jpeg" />
+          <meta property="og:image:width" content={String(image.width)} />
+          <meta property="og:image:height" content={String(image.height)} />
+          <meta name="twitter:card" content="summary_large_image" />
+        </>
+      )
+    }
+    <slot name="head" />
+  </head>
+  <body>
+    <div class="page">
+      <header class="site-header">
+        <p class="site-title"><a href="/">{SITE_TITLE}</a></p>
+        <p class="tagline">{SITE_DESCRIPTION}</p>
+      </header>
+      <slot />
+    </div>
+  </body>
+</html>

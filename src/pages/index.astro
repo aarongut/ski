@@ -1,0 +1,50 @@
+---
+import Base from "../layouts/Base.astro";
+import Picture from "../components/Picture.astro";
+import { previewImage, tripUrl, trips } from "../lib/gallery.ts";
+
+const COVER_SIZES = "(min-width: 1300px) 33vw, (min-width: 860px) 50vw, 100vw";
+---
+
+<Base image={previewImage(trips[0].coverImage)}>
+  <script slot="head" is:inline>
+    // Links from the old single-page site used #hashes (/#CMH-Galena-…, /#photo.jpg). Send them to
+    // the trip's own page.
+    if (window.location.hash.length > 1) {
+      fetch("/legacy.json")
+        .then((response) => response.json())
+        .then((redirects) => {
+          const target = redirects[decodeURIComponent(window.location.hash.slice(1))];
+          if (target) {
+            window.location.replace(target);
+          }
+        })
+        .catch(() => {});
+    }
+  </script>
+  <main>
+    <h1 class="visually-hidden">Trips</h1>
+    <ul class="trips">
+      {
+        trips.map((trip, index) => (
+          <li>
+            <a class="trip-card" href={tripUrl(trip)}>
+              <div class="trip-card-photo">
+                <Picture
+                  image={trip.coverImage}
+                  sizes={COVER_SIZES}
+                  alt=""
+                  eager={index < 3}
+                />
+              </div>
+              <div class="trip-card-text">
+                <span class="trip-card-location">{trip.location}</span>
+                <span class="trip-card-meta">{trip.description}</span>
+              </div>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </main>
+</Base>

@@ -1,0 +1,63 @@
+---
+import Picture from "./Picture.astro";
+import justifySource from "../scripts/justify.js?raw";
+import {
+  aspectRatio,
+  avifSrcset,
+  downloadUrl,
+  exifAttribute,
+  fallbackJpeg,
+  jpegSrcset,
+  largestDimensions,
+  type Trip,
+} from "../lib/gallery.ts";
+
+interface Props {
+  trip: Trip;
+}
+
+const { trip } = Astro.props;
+
+/** Images in roughly the first screenful load eagerly; the rest wait until they're near the viewport. */
+const EAGER_COUNT = 6;
+
+/**
+ * Rendered width is the aspect ratio times the row height, plus some stretch to fill the row.
+ * These mirror --row-h in global.css (150px narrow, 350px from 900px up).
+ */
+const sizesFor = (ar: number): string =>
+  `(min-width: 900px) min(${Math.round(ar * 350 * 1.25)}px, 100vw), min(${Math.round(ar * 150 * 1.4)}px, 100vw)`;
+---
+
+<div class="grid" data-grid>
+  {
+    trip.images.map((image, index) => {
+      const ar = aspectRatio(image);
+      const largest = largestDimensions(image);
+      return (
+        <a
+          class="tile"
+          id={image.src}
+          href={fallbackJpeg(image)}
+          style={`--ar: ${ar.toFixed(5)}`}
+          data-ar={ar.toFixed(5)}
+          data-src={image.src}
+          data-download={downloadUrl(image)}
+          data-exif={exifAttribute(image)}
+          data-pswp-width={largest.width}
+          data-pswp-height={largest.height}
+          data-pswp-srcset={avifSrcset(image)}
+          data-jpeg-srcset={jpegSrcset(image)}
+        >
+          <Picture
+            image={image}
+            sizes={sizesFor(ar)}
+            alt={`${trip.title}, photo ${index + 1} of ${trip.images.length}`}
+            eager={index < EAGER_COUNT}
+          />
+        </a>
+      );
+    })
+  }
+</div>
+<script is:inline set:html={justifySource} />

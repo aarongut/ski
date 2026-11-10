@@ -10,38 +10,35 @@
   },
   "type": "module",
   "scripts": {
-    "check": "vp check",
-    "dev": "vp dev",
-    "build": "vp build",
-    "deploy": "node --experimental-strip-types scripts/publish.ts",
-    "fmt": "vp fmt",
-    "images": "node --experimental-strip-types scripts/convert.ts",
-    "lint": "vp lint",
-    "preview": "vp preview",
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "vp check && astro check",
+    "images": "node scripts/convert.ts",
+    "deploy": "node scripts/publish.ts",
     "prepare": "vp config"
   },
   "dependencies": {
-    "@aws-sdk/client-cloudfront": "^3.1029.0",
-    "@aws-sdk/client-s3": "^3.1029.0",
-    "@aws-sdk/credential-providers": "^3.1029.0",
+    "@aws-sdk/client-cloudfront": "^3.1165.0",
+    "@aws-sdk/client-s3": "^3.1165.0",
+    "@aws-sdk/credential-providers": "^3.1165.0",
+    "@fontsource/monaspace-xenon": "^5.3.0",
+    "astro": "7.4.7",
     "mime-types": "^3.0.2",
-    "react": "^19.2.5",
-    "react-dom": "^19.2.5"
+    "photoswipe": "^5.4.4"
   },
   "devDependencies": {
+    "@astrojs/check": "^0.9.12",
     "@types/mime-types": "^3.0.1",
-    "@types/node": "^25.6.0",
-    "@types/react": "^19.2.14",
-    "@types/react-dom": "^19.2.3",
-    "@vitejs/plugin-react": "^5.0.2",
-    "babel-plugin-react-compiler": "^1.0.0",
-    "typescript": "^6.0.2",
-    "vite": "npm:@voidzero-dev/vite-plus-core@0.1.16",
-    "vite-plus": "0.1.16"
+    "@types/node": "^26.6.6",
+    "exif-reader": "^2.0.3",
+    "sharp": "^0.35.5",
+    "typescript": "^6.0.3",
+    "vite": "npm:@voidzero-dev/vite-plus-core@1.5.1",
+    "vite-plus": "1.5.1"
   },
   "overrides": {
-    "vite": "npm:@voidzero-dev/vite-plus-core@0.1.16",
-    "vitest": "npm:@voidzero-dev/vite-plus-test@0.1.16"
+    "vite": "npm:@voidzero-dev/vite-plus-core@1.5.1"
   },
   "packageManager": "npm@11.12.1"
 }

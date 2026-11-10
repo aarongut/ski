@@ -1,0 +1,63 @@
+---
+import type { GetStaticPaths } from "astro";
+import Base from "../layouts/Base.astro";
+import PhotoGrid from "../components/PhotoGrid.astro";
+import { previewImage, tripUrl, trips, type Trip } from "../lib/gallery.ts";
+
+export const getStaticPaths = (() =>
+  trips.map((trip, index) => ({
+    params: { slug: trip.slug },
+    props: { trip, newer: trips[index - 1], older: trips[index + 1] },
+  }))) satisfies GetStaticPaths;
+
+interface Props {
+  trip: Trip;
+  newer?: Trip;
+  older?: Trip;
+}
+
+const { trip, newer, older } = Astro.props;
+---
+
+<Base
+  title={trip.title}
+  description={`${trip.images.length} photos from ${trip.location}, ${trip.description}.`}
+  image={previewImage(trip.coverImage)}
+>
+  <main>
+    <header class="trip-header">
+      <a href="/">← All trips</a>
+      <h1 class="trip-title">{trip.location}</h1>
+      <p class="trip-meta">{trip.description}</p>
+    </header>
+
+    <PhotoGrid trip={trip} />
+
+    <nav class="trip-nav" aria-label="More trips">
+      <div>
+        {
+          newer && (
+            <a href={tripUrl(newer)}>
+              <span class="trip-nav-label">← Newer</span>
+              <span>{newer.title}</span>
+            </a>
+          )
+        }
+      </div>
+      <div class="trip-nav-next">
+        {
+          older && (
+            <a href={tripUrl(older)}>
+              <span class="trip-nav-label">Older →</span>
+              <span>{older.title}</span>
+            </a>
+          )
+        }
+      </div>
+    </nav>
+  </main>
+</Base>
+
+<script>
+  import "../scripts/lightbox.ts";
+</script>

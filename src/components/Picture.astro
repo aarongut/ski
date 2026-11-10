@@ -1,0 +1,28 @@
+---
+import { avifSrcset, jpegSrcset, smallJpeg, type Image } from "../lib/gallery.ts";
+
+interface Props {
+  image: Image;
+  /** The `sizes` attribute: how wide the image renders, so the browser can pick a file. */
+  sizes: string;
+  alt: string;
+  eager?: boolean;
+}
+
+const { image, sizes, alt, eager = false } = Astro.props;
+---
+
+<picture>
+  <source type="image/avif" srcset={avifSrcset(image)} sizes={sizes} />
+  <img
+    src={smallJpeg(image)}
+    srcset={jpegSrcset(image)}
+    sizes={sizes}
+    width={image.width}
+    height={image.height}
+    alt={alt}
+    loading={eager ? "eager" : "lazy"}
+    decoding="async"
+    fetchpriority={eager ? "high" : undefined}
+  />
+</picture>

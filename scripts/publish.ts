@@ -1,5 +1,5 @@
 import { createReadStream } from "node:fs";
-import { readdir, stat } from "node:fs/promises";
+import { readFile, readdir, stat } from "node:fs/promises";
 import path from "node:path";
 import { spawn } from "node:child_process";
 import { pathToFileURL } from "node:url";
@@ -14,12 +14,15 @@ import { ListObjectsV2Command, PutObjectCommand, S3Client } from "@aws-sdk/clien
 import { fromIni } from "@aws-sdk/credential-providers";
 import mime from "mime-types";
 
+import { allDerivedPaths, originalPath } from "../src/lib/images.ts";
+
 const BUCKET = "ski.aarongutierrez.com";
 const DISTRIBUTION = "ELFNI2LSHJUNK";
 const DIST_DIR = "dist";
 const IMAGE_DIR = "img";
 const AWS_PROFILE = "push";
 const AWS_REGION = "us-west-2";
+const DATA_FILE = "data.json";
 
 const credentials = fromIni({ profile: AWS_PROFILE });
 
@@ -78,12 +81,12 @@ const contentTypeFor = (filename: string): string => {
   return contentType;
 };
 
-const cacheControlFor = (key: string): string => {
-  if (key === "index.html") {
+const cacheControlFor = (key: string, filename: string): string => {
+  if (filename.endsWith(".html")) {
     return "no-cache, max-age=0, must-revalidate";
   }
 
-  if (key.startsWith("assets/")) {
+  if (key.startsWith("_astro/")) {
     return "public, max-age=31536000, immutable";
   }
 
@@ -98,7 +101,6 @@ const uploadFile = async (filename: string, key: string, overwrite: boolean): Pr
   if (!overwrite) {
     const keys = await currentKeys();
     if (keys.has(key)) {
-      console.log(`Skipping existing key ${key}`);
       return;
     }
   }
@@ -109,11 +111,12 @@ const uploadFile = async (filename: string, key: string, overwrite: boolean): Pr
       ACL: "public-read",
       Body: createReadStream(filename),
       Bucket: BUCKET,
-      CacheControl: cacheControlFor(key),
+      CacheControl: cacheControlFor(key, filename),
       ContentType: contentTypeFor(filename),
       Key: key,
     }),
   );
+  (await currentKeys()).add(key);
   console.log("\tDone.");
 };
 
@@ -122,7 +125,7 @@ const walkFiles = async (root: string): Promise<string[]> => {
   const files: string[] = [];
 
   for (const entry of entries.sort((a, b) => a.name.localeCompare(b.name))) {
-    if (entry.name === ".DS_Store") {
+    if (entry.name === ".DS_Store" || entry.name.includes(".tmp-")) {
       continue;
     }
 
@@ -145,12 +148,24 @@ const walkFiles = async (root: string): Promise<string[]> => {
   return files;
 };
 
+/**
+ * Trip pages are served at extensionless URLs (/galena-april-2026). CloudFront's S3 origin maps a
+ * path straight to a key, so galena-april-2026.html is stored under the key "galena-april-2026".
+ * index.html stays as-is (it's the distribution's default root object), as does 404.html.
+ */
+const pageKey = (relative: string): string => {
+  if (!relative.endsWith(".html") || relative === "index.html" || relative === "404.html") {
+    return relative;
+  }
+  return relative.slice(0, -".html".length);
+};
+
 const uploadTree = async (root: string, keyPrefix: string, overwrite: boolean): Promise<void> => {
   const files = await walkFiles(root);
 
   for (const file of files) {
     const relative = path.relative(root, file).split(path.sep).join("/");
-    const key = keyPrefix ? `${keyPrefix}/${relative}` : relative;
+    const key = keyPrefix ? `${keyPrefix}/${relative}` : pageKey(relative);
     await uploadFile(file, key, overwrite);
   }
 };
@@ -175,7 +190,7 @@ const runCommand = async (command: string, args: string[]): Promise<void> =>
   });
 
 const buildApp = async (): Promise<void> => {
-  await runCommand("vp", ["build"]);
+  await runCommand("vp", ["run", "build"]);
 };
 
 const ensureDefaultRoot = async (): Promise<void> => {
@@ -203,16 +218,16 @@ const ensureDefaultRoot = async (): Promise<void> => {
   console.log("\tDone.");
 };
 
-const invalidateRoot = async (): Promise<void> => {
-  console.log(`Invalidating / and /index.html on ${DISTRIBUTION}`);
+const invalidateSite = async (): Promise<void> => {
+  console.log(`Invalidating /* on ${DISTRIBUTION}`);
   await cloudfront.send(
     new CreateInvalidationCommand({
       DistributionId: DISTRIBUTION,
       InvalidationBatch: {
         CallerReference: `${Date.now()}`,
         Paths: {
-          Items: ["/", "/index.html"],
-          Quantity: 2,
+          Items: ["/*"],
+          Quantity: 1,
         },
       },
     }),
@@ -227,20 +242,54 @@ const ensureDirectory = async (directory: string): Promise<void> => {
   }
 };
 
-export const publish = async (): Promise<void> => {
+/** Every file the built site links to for each photo in data.json. */
+const requiredImageKeys = async (): Promise<string[]> => {
+  const data = JSON.parse(await readFile(DATA_FILE, "utf8")) as {
+    sets: { images: { src: string }[] }[];
+  };
+  return data.sets.flatMap((set) =>
+    set.images.flatMap((image) => [originalPath(image.src), ...allDerivedPaths(image.src)]),
+  );
+};
+
+/**
+ * Refuses to publish pages that would link to images that aren't in the bucket, e.g. when deploying
+ * from a machine that only has some trips' full-size files and the rest haven't been converted yet.
+ */
+const ensureImagesUploaded = async (allowMissing: boolean): Promise<void> => {
+  const keys = await currentKeys();
+  const required = await requiredImageKeys();
+  const missing = required.filter((key) => !keys.has(key));
+  if (missing.length === 0) {
+    return;
+  }
+  const photos = new Set(missing.map((key) => path.basename(key).replace(/\.\w+$/, "")));
+  const message =
+    `${missing.length} image files for ${photos.size} photos aren't in ${BUCKET}, e.g. ${missing[0]}. ` +
+    "Run `vp run images` and then `vp run deploy` on the machine that has those photos' full-size files.";
+  if (!allowMissing) {
+    throw new Error(
+      `${message}\nNothing but images was uploaded. Pass --allow-missing to publish anyway.`,
+    );
+  }
+  console.warn(`Warning: ${message}`);
+};
+
+export const publish = async ({ allowMissing = false } = {}): Promise<void> => {
+  await ensureDirectory(IMAGE_DIR);
   await buildApp();
   await ensureDirectory(DIST_DIR);
-  await ensureDirectory(IMAGE_DIR);
-  await uploadTree(DIST_DIR, "", true);
   await uploadTree(IMAGE_DIR, "img", false);
+  await ensureImagesUploaded(allowMissing);
+  await uploadTree(DIST_DIR, "", true);
   await ensureDefaultRoot();
-  await invalidateRoot();
+  await invalidateSite();
 };
 
 const entrypoint = process.argv[1] ? pathToFileURL(path.resolve(process.argv[1])).href : null;
 
 if (entrypoint === import.meta.url) {
-  publish().catch((error: unknown) => {
+  publish({ allowMissing: process.argv.includes("--allow-missing") }).catch((error: unknown) => {
     console.error(error);
     process.exitCode = 1;
   });

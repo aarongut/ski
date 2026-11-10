@@ -1,0 +1,364 @@
+:root {
+  --bg: #f5f6f7;
+  --fg: #1b2128;
+  --muted: #5f6a76;
+  --line: #dde2e7;
+  --accent: #3a75b0;
+  --tile: #e3e7eb;
+
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --gutter: clamp(16px, 3vw, 40px);
+  --max-width: 1880px;
+
+  /* Target row height and spacing for the justified photo grid (read by justify.js). */
+  --row-h: 150px;
+  --gap: 2px;
+
+  color-scheme: light;
+}
+
+@media (min-width: 900px) {
+  :root {
+    --row-h: 350px;
+    --gap: 3px;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0e1013;
+    --fg: #e7eaee;
+    --muted: #97a1ac;
+    --line: #252a30;
+    --accent: #8ab6e3;
+    --tile: #1a1e23;
+    color-scheme: dark;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scrollbar-gutter: stable;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font: 16px/1.5 var(--font);
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+picture {
+  display: contents;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+.page {
+  margin: 0 auto;
+  max-width: var(--max-width);
+  padding: 0 var(--gutter);
+}
+
+.visually-hidden {
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
+/* Site header */
+
+.site-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 24px;
+  padding-block: clamp(20px, 4vw, 40px) clamp(16px, 3vw, 28px);
+}
+
+.site-title {
+  color: var(--accent);
+  font-size: clamp(28px, 4.2vw, 44px);
+  font-weight: 300;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  margin: 0;
+}
+
+.site-title a {
+  color: inherit;
+}
+
+.site-title a:hover {
+  text-decoration: none;
+}
+
+.tagline {
+  color: var(--muted);
+  margin: 0;
+}
+
+/* Home: trip cards */
+
+.trips {
+  display: grid;
+  gap: clamp(24px, 3vw, 40px) clamp(16px, 2vw, 28px);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 380px), 1fr));
+  list-style: none;
+  margin: 0;
+  padding: 0 0 clamp(32px, 5vw, 64px);
+}
+
+.trip-card {
+  color: inherit;
+  display: grid;
+  gap: 12px;
+}
+
+.trip-card:hover {
+  text-decoration: none;
+}
+
+.trip-card-photo {
+  aspect-ratio: 3 / 2;
+  background: var(--tile);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.trip-card-photo img {
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
+}
+
+.trip-card-text {
+  display: grid;
+  gap: 2px;
+}
+
+.trip-card-location {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+}
+
+.trip-card-meta {
+  color: var(--muted);
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+}
+
+.trip-card:hover .trip-card-location {
+  color: var(--accent);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .trip-card-photo img {
+    transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .trip-card:hover .trip-card-photo img {
+    transform: scale(1.025);
+  }
+}
+
+/* Trip page */
+
+.trip-header {
+  border-top: 1px solid var(--line);
+  display: grid;
+  gap: 4px;
+  padding-block: clamp(16px, 2.5vw, 24px) clamp(20px, 3vw, 32px);
+}
+
+.trip-title {
+  font-size: clamp(24px, 3vw, 32px);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.2;
+  margin: 0;
+  text-wrap: balance;
+}
+
+.trip-meta {
+  color: var(--muted);
+  font-size: 19px;
+  font-variant-numeric: tabular-nums;
+  margin: 0;
+}
+
+.trip-nav {
+  border-top: 1px solid var(--line);
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 1fr 1fr;
+  margin-top: clamp(32px, 5vw, 56px);
+  padding-block: 20px clamp(32px, 5vw, 56px);
+}
+
+.trip-nav a {
+  display: grid;
+  gap: 2px;
+}
+
+.trip-nav-label {
+  color: var(--muted);
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.trip-nav-next {
+  text-align: right;
+}
+
+/* Justified photo grid. CSS gives a good layout on its own; justify.js refines the row breaks. */
+
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap);
+}
+
+.grid::after {
+  content: "";
+  flex: 1000000 0 0;
+}
+
+.grid.is-justified::after {
+  display: none;
+}
+
+.tile {
+  aspect-ratio: var(--ar);
+  background: var(--tile);
+  cursor: zoom-in;
+  display: block;
+  flex: var(--ar) 0 calc(var(--ar) * var(--row-h));
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.tile img {
+  height: 100%;
+  width: 100%;
+}
+
+/* Not found */
+
+.not-found {
+  display: grid;
+  gap: 12px;
+  padding-block: 10vh 20vh;
+}
+
+.not-found h2 {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.not-found p {
+  color: var(--muted);
+  margin: 0;
+}
+
+/* Lightbox (PhotoSwipe) */
+
+.pswp {
+  --pswp-bg: #0a0b0d;
+  --pswp-placeholder-bg: #16181b;
+  --pswp-icon-color: rgba(255, 255, 255, 0.92);
+  --pswp-icon-color-secondary: rgba(0, 0, 0, 0.45);
+}
+
+.pswp__caption {
+  bottom: max(16px, env(safe-area-inset-bottom, 0px));
+  color: rgba(255, 255, 255, 0.78);
+  display: grid;
+  gap: 6px;
+  justify-items: center;
+  left: 0;
+  padding: 0 24px;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  text-align: center;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.7);
+  transition: opacity 0.25s ease;
+}
+
+.pswp__caption p {
+  margin: 0;
+}
+
+/* Camera readout: a technical, monospaced slab serif with spaced-out fields. */
+.pswp__exif {
+  color: rgba(255, 255, 255, 0.6);
+  display: flex;
+  flex-wrap: wrap;
+  font:
+    12px/1.5 "Monaspace Xenon",
+    ui-monospace,
+    "SF Mono",
+    Menlo,
+    monospace;
+  gap: 0 2.5ch;
+  justify-content: center;
+  letter-spacing: 0.02em;
+}
+
+.pswp__exif[hidden] {
+  display: none;
+}
+
+/* On wider screens, sit in the bottom-left corner, lined up with the counter in the top-left. */
+@media (min-width: 700px) {
+  .pswp__caption {
+    justify-items: start;
+    padding: 0 20px;
+    text-align: left;
+  }
+
+  .pswp__exif {
+    justify-content: flex-start;
+  }
+}
+
+.pswp:not(.pswp--ui-visible) .pswp__caption {
+  opacity: 0;
+}
+
+.pswp__counter {
+  font-variant-numeric: tabular-nums;
+}
